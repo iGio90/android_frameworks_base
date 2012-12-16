@@ -87,19 +87,19 @@ public final class RingModeSettings implements Parcelable {
     public static RingModeSettings fromXml(XmlPullParser xpp, Context context)
             throws XmlPullParserException, IOException {
         int event = xpp.next();
-        RingModeSettings ringModeDescriptor = new RingModeSettings();
-        while (event != XmlPullParser.END_TAG || !xpp.getName().equals("ringModeDescriptor")) {
+        RingModeSettings connectionDescriptor = new RingModeSettings();
+        while (event != XmlPullParser.END_TAG) {
             if (event == XmlPullParser.START_TAG) {
                 String name = xpp.getName();
                 if (name.equals("value")) {
-                    ringModeDescriptor.mValue = xpp.nextText();
+                    connectionDescriptor.mValue = xpp.nextText();
                 } else if (name.equals("override")) {
-                    ringModeDescriptor.mOverride = Boolean.parseBoolean(xpp.nextText());
+                    connectionDescriptor.mOverride = Boolean.parseBoolean(xpp.nextText());
                 }
             }
             event = xpp.next();
         }
-        return ringModeDescriptor;
+        return connectionDescriptor;
     }
 
     /** @hide */
