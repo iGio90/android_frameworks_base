@@ -3045,6 +3045,13 @@ public final class Settings {
          */
         public static final String QS_DYNAMIC_ALARM = "qs_dyanmic_alarm";
 
+	/**
+         * Quick Settings Quick Pulldown
+         *
+         * @hide
+         */
+        public static final String QS_QUICK_PULLDOWN = "qs_quick_pulldown";
+
         /**
          * QuickSettings panel dynamic bug-report tile
          * @hide
