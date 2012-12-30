@@ -2797,6 +2797,13 @@ public final class Settings {
          */
         public static final String STATUS_ICON_COLOR = "status_icon_color";
 
+        /**
+         * Navigation bar alpha while in homescreen and lockscreen.
+         *
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_ALPHA = "navigation_bar_alpha";
+
         /*
          * On or off the Pie.
          *

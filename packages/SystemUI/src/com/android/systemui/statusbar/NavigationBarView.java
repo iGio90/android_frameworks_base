@@ -400,6 +400,11 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                     addButton(navButtonLayout, generateKey(landscape, KEY_ARROW_RIGHT), landscape);
             }
         }
+
+        Drawable bg = mContext.getResources().getDrawable(R.drawable.nav_bar_bg);
+        if(bg instanceof ColorDrawable) {
+            setBackground(new BackgroundAlphaColorDrawable(((ColorDrawable) bg).getColor()));
+        }
     }
 
     private void addLightsOutButton(LinearLayout root, View v, boolean landscape, boolean empty) {
@@ -1072,6 +1077,17 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         public void onChange(boolean selfChange) {
             updateSettings();
         }
+    }
+
+    /*
+     * ]0 < alpha < 1[
+     */
+    private void setBackgroundAlpha(float alpha) {
+        Drawable bg = getBackground();
+        if(bg == null) return;
+
+        int a = (int) (alpha * 255);
+        bg.setAlpha(a);
     }
 
     protected void updateSettings() {
