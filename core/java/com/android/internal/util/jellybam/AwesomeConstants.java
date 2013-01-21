@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 public class AwesomeConstants {
 
@@ -55,11 +56,13 @@ public class AwesomeConstants {
     }
 
     public static AwesomeConstant fromString(String string) {
-        AwesomeConstant[] allTargs = AwesomeConstant.values();
-        for (int i=0; i < allTargs.length; i++) {
-            if (string.equals(allTargs[i].value())) {
-                return allTargs[i];
-            }
+        if (!TextUtils.isEmpty(string)) {
+        	AwesomeConstant[] allTargs = AwesomeConstant.values();
+        	for (int i=0; i < allTargs.length; i++) {
+            		if (string.equals(allTargs[i].value())) {
+                	return allTargs[i];
+	    		}
+        	}
         }
         // not in ENUM must be custom
         return AwesomeConstant.ACTION_APP;
@@ -108,6 +111,9 @@ public class AwesomeConstants {
         // Will return a string for the associated action, but will need the caller's context to get resources.
         Resources res = context.getResources();
         String value = "";
+        if (TextUtils.isEmpty(actionstring)) {
+            actionstring = AwesomeConstant.ACTION_NULL.value();
+        }
         AwesomeConstant action = fromString(actionstring);
         switch (action) {
             case ACTION_HOME :
