@@ -2574,6 +2574,13 @@ public final class Settings {
         public static final String QS_NO_NOTIFICATION_PULLDOWN = "qs_no_notification_pulldown";
 
         /**
+         * Quick Settings Disable Panel
+         *
+         * @hide
+         */
+        public static final String QS_DISABLE_PANEL = "qs_disable_panel";
+
+        /**
          * Use the Notification Power Widget? (Who wouldn't!)
          *
          * @hide
@@ -2996,7 +3003,7 @@ public final class Settings {
          */
         public static final String USER_INTERFACE_STATE = "user_interface_state";
 
-        /**	
+        /**
          * Allows to show the background activity back the lockscreen
          * The value is boolean (1 or 0).
          * @hide

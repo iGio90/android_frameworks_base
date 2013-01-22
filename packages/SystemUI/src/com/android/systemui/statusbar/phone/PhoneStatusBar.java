@@ -231,8 +231,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     // settings
     QuickSettingsController mQS;
-    boolean mHasSettingsPanel, mHasFlipSettings;
     boolean mUiModeIsToggled;
+    boolean mHasSettingsPanel, mHideSettingsPanel, mHasFlipSettings;
     SettingsPanelView mSettingsPanel;
     View mFlipSettingsView;
     QuickSettingsContainerView mSettingsContainer;
@@ -558,11 +558,17 @@ public class PhoneStatusBar extends BaseStatusBar {
         mClearButton.setEnabled(false);
         mDateView = (DateView)mStatusBarWindow.findViewById(R.id.date);
 
-        mHasSettingsPanel = res.getBoolean(R.bool.config_hasSettingsPanel);
-
         mUiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
                               Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
 
+        if (mStatusBarView.hasFullWidthNotifications()) {
+            mHideSettingsPanel = Settings.System.getInt(mContext.getContentResolver(),
+                                    Settings.System.QS_DISABLE_PANEL, 0) == 1;
+            mHasSettingsPanel = res.getBoolean(R.bool.config_hasSettingsPanel) && !mHideSettingsPanel;
+        } else {
+            mHideSettingsPanel = false;
+            mHasSettingsPanel = res.getBoolean(R.bool.config_hasSettingsPanel);
+        }
         mHasFlipSettings = res.getBoolean(R.bool.config_hasFlipSettingsPanel);
 
         mDateTimeView = mNotificationPanelHeader.findViewById(R.id.datetime);
@@ -759,7 +765,11 @@ public class PhoneStatusBar extends BaseStatusBar {
         mNotifChangedObserver = new NotifChangedObserver(mHandler);
         mNotifChangedObserver.startObserving();
 
-        mClingShown = ! (DEBUG_CLINGS 
+        // Start observing for changes on QuickSettings (needed here for enable/hide qs)
+        mTilesChangedObserver = new TilesChangedObserver(mHandler);
+        mTilesChangedObserver.startObserving();
+
+        mClingShown = ! (DEBUG_CLINGS
             || !Prefs.read(mContext).getBoolean(Prefs.SHOWN_QUICK_SETTINGS_HELP, false));
 
         if (!ENABLE_NOTIFICATION_PANEL_CLING || ActivityManager.isRunningInTestHarness()) {
@@ -2992,16 +3002,12 @@ public class PhoneStatusBar extends BaseStatusBar {
             if (hideSettingsPanel != mHideSettingsPanel) {
                 recreateStatusBar();
             }
-	}
 
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
             if (mSettingsContainer != null) {
                 // Refresh the container
                 mSettingsContainer.removeAllViews();
                 mQS.setupQuickSettings();
                 mSettingsContainer.updateResources();
-                setNotificationWallpaperHelper();
             }
         }
 
