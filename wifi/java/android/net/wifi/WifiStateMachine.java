@@ -1347,14 +1347,14 @@ public class WifiStateMachine extends StateMachine {
             setCountryCode(countryCode, false);
         } else {
             // On wifi-only devices, some drivers don't find hidden SSIDs unless DRIVER COUNTRY
-            // is called. Pinging the wifi driver without country code resolves this issue.
+            // is called. Use the default country code to ping the driver.
             ConnectivityManager cm =
                     (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
             if (!cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE)) {
-                setCountryCode(null, false);
+                setCountryCode(mCountryCode, false);
             }
 
-            // In other case, mmc tables from carrier do the trick of starting up the wifi driver
+            // In other case, mcc tables from carrier do the trick of starting up the wifi driver
         }
     }
 
