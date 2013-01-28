@@ -371,6 +371,8 @@ public class PieMenu extends FrameLayout {
         ColorUtils.ColorSettingInfo buttonColorInfo = ColorUtils.getColorSettingInfo(mContext,
                 Settings.System.NAV_BUTTON_COLOR);
 
+        // Colors
+
         mNotificationPaint.setColor(COLOR_STATUS);
         mSnapBackground.setColor(COLOR_SNAP_BACKGROUND);
         mStatusPaint.setColor(COLOR_STATUS);
@@ -399,6 +401,7 @@ public class PieMenu extends FrameLayout {
                 item.setColor(buttonColorInfo.isLastColorNull ? COLOR_PIE_BUTTON : buttonColorInfo.lastColor);
             }
         } else {
+
             mPieBackground.setColor(COLOR_PIE_BACKGROUND);
             mPieSelected.setColor(COLOR_PIE_SELECT);
             mPieOutlines.setColor(COLOR_PIE_OUTLINES);
@@ -1005,8 +1008,7 @@ public class PieMenu extends FrameLayout {
                         break;
                 }
 
-                if (!mNavbarZero) {
-                    if (state == PieStatusPanel.QUICK_SETTINGS_PANEL && 
+                if (state == PieStatusPanel.QUICK_SETTINGS_PANEL && 
                             mStatusPanel.getFlipViewState() != PieStatusPanel.QUICK_SETTINGS_PANEL
                             && mStatusPanel.getCurrentViewState() != PieStatusPanel.QUICK_SETTINGS_PANEL) {
                         mGlowOffsetRight = mPanelOrientation != Gravity.TOP ? 150 : 255;;
@@ -1021,8 +1023,7 @@ public class PieMenu extends FrameLayout {
                         mStatusPanel.setFlipViewState(PieStatusPanel.NOTIFICATIONS_PANEL);
                         if (mHapticFeedback && !snapActive) mVibrator.vibrate(2);
                     }
-                }
-                deselect();
+                    deselect();
             }
 
             // Take back shade trigger if user decides to abandon his gesture
