@@ -36,6 +36,9 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.CustomTheme;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -1359,6 +1362,10 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
     }
 
+    boolean hasClearableNotifications() {
+        return mNotificationData.hasClearableItems();
+    }
+
     protected void updateNotificationShortcutsVisibility(boolean vis) {
         updateNotificationShortcutsVisibility(vis, false);
     }
@@ -1948,7 +1955,8 @@ public class PhoneStatusBar extends BaseStatusBar {
             mSettingsButton.setAlpha(1f);
             mSettingsButton.setVisibility(View.VISIBLE);
             mNotificationPanel.setVisibility(View.GONE);
-            mFlipSettingsView.setVisibility(View.GONE);
+            if (!mHideSettingsPanel)
+                mFlipSettingsView.setVisibility(View.GONE);
             mNotificationButton.setVisibility(View.GONE);
             setAreThereNotifications(); // show the clear button
         }
@@ -2964,7 +2972,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     /**
      *  ContentObserver to watch for Quick Settings tiles changes
      * @author dvtonder
-     *
+     * @author kufikugel
      */
     private class TilesChangedObserver extends ContentObserver {
         public TilesChangedObserver(Handler handler) {
@@ -2976,22 +2984,33 @@ public class PhoneStatusBar extends BaseStatusBar {
         public void onChange(boolean selfChange) {
             boolean uiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
                                     Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
-
             if (uiModeIsToggled != mUiModeIsToggled) {
                 recreateStatusBar();
             }
-
+	    boolean hideSettingsPanel = Settings.System.getInt(mContext.getContentResolver(),
+                                    Settings.System.QS_DISABLE_PANEL, 0) == 1;
+            if (hideSettingsPanel != mHideSettingsPanel) {
+                recreateStatusBar();
+            }
 	}
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             if (mSettingsContainer != null) {
+                // Refresh the container
+                mSettingsContainer.removeAllViews();
                 mQS.setupQuickSettings();
+                mSettingsContainer.updateResources();
+                setNotificationWallpaperHelper();
             }
         }
 
         public void startObserving() {
             final ContentResolver cr = mContext.getContentResolver();
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QS_DISABLE_PANEL),
+                    false, this);
+
             cr.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.QUICK_SETTINGS),
                     false, this);
