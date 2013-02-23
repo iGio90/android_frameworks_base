@@ -43,9 +43,6 @@ import android.widget.TextView;
 import com.android.systemui.R;
 import com.android.systemui.SystemUI;
 
-import static android.provider.Settings.System.DISABLE_LOW_BATTERY_WARNING;
-import static android.provider.Settings.System.DISABLE_LOW_BATTERY_WARNING_DEF;
-
 public class PowerUI extends SystemUI {
     static final String TAG = "PowerUI";
 
@@ -107,14 +104,6 @@ public class PowerUI extends SystemUI {
         throw new RuntimeException("not possible!");
     }
 
-
-    private boolean isBatteryWarningDisabled() {
-        return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.DISABLE_LOW_BATTERY_WARNING,
-                Settings.System.DISABLE_LOW_BATTERY_WARNING_DEF)
-                == Settings.System.DISABLE_LOW_BATTERY_WARNING_DEF ? false : true;
-    }
-
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -156,8 +145,6 @@ public class PowerUI extends SystemUI {
                     dismissInvalidChargerDialog();
                 } else if (mInvalidChargerDialog != null) {
                     // if invalid charger is showing, don't show low battery
-                    return;
-                } else if (isBatteryWarningDisabled()) {
                     return;
                 }
 
