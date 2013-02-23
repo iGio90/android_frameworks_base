@@ -3214,6 +3214,20 @@ public final class Settings {
         public static final String RAM_USAGE_BAR = "ram_usage_bar";
 
         /**
+         * Disable low battery warning
+         *
+         * @hide
+         */
+        public static final String DISABLE_LOW_BATTERY_WARNING = "disable_low_battery_warning";
+
+        /**
+         * Disable low battery warning
+         *
+         * @hide
+         */
+        public static final int DISABLE_LOW_BATTERY_WARNING_DEF = 0;
+
+        /**
          * Goodbye fullscreen keyboard
          *
          * @hide
