@@ -1390,7 +1390,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 haltTicker();
             }
         }
-        mStatusBarView.updateBackgroundAlpha();
     }
 
     @Override
@@ -2087,8 +2086,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     public void topAppWindowChanged(boolean showMenu) {
-
-        mStatusBarView.updateBackgroundAlpha();
 
         if (mPieControlPanel != null)
             mPieControlPanel.setMenu(showMenu);
