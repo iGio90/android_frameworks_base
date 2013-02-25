@@ -187,7 +187,6 @@ public class NotificationPanelView extends PanelView {
 		}
                 mOkToFlip = false;
             }
-        }
         return mHandleView.dispatchTouchEvent(event);
     }
 }
