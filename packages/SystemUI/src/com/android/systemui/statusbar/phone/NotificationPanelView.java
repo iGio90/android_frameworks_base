@@ -179,29 +179,12 @@ public class NotificationPanelView extends PanelView {
                     }
                     break;
             }
-            if (mOkToFlip && flip) {
-                float miny = event.getY(0);
-                float maxy = miny;
-                for (int i=1; i<event.getPointerCount(); i++) {
-                    final float y = event.getY(i);
-                    if (y < miny) miny = y;
-                    if (y > maxy) maxy = y;
-                }
-                if (maxy - miny < mHandleBarHeight) {
-                    if (getMeasuredHeight() < mHandleBarHeight) {
-                        mStatusBar.switchToSettings();
-                    } else {
-                        mStatusBar.flipToSettings();
-                    }
-                    mOkToFlip = false;
-                }
-            } else if (mSwipeTriggered) {
-                final float deltaX = (event.getX(0) - mGestureStartX) * mSwipeDirection;
-                mStatusBar.partialFlip(mFlipOffset +
-                                       deltaX / (getWidth() * STATUS_BAR_SWIPE_MOVE_PERCENTAGE));
-                if (!swipeFlipJustStarted) {
-                    return true; // Consume the event.
-                }
+           if(mOkToFlip && shouldFlip) {
+                if (getMeasuredHeight() < mHandleBarHeight) {
+                    mStatusBar.switchToSettings();
+                } else {
+                    mStatusBar.flipToSettings();                }
+		}
                 mOkToFlip = false;
             }
         }
