@@ -713,11 +713,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mVelocityTracker = VelocityTracker.obtain();
 
-        mIsAutoBrightNess = checkAutoBrightNess();
-
-        updatePropFactorValue();
-
-        mTransparencyManager.setStatusbar(mStatusBarView);
         return mStatusBarView;
     }
 
@@ -891,9 +886,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         prepareNavigationBarView();
 
         mWindowManager.addView(mNavigationBarView, getNavigationBarLayoutParams());
-        mNavigationBarView.setTransparencyManager(mTransparencyManager);
-        mTransparencyManager.setNavbar(mNavigationBarView);
-        mTransparencyManager.update();
     }
 
     private void repositionNavigationBar() {
@@ -1398,7 +1390,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 haltTicker();
             }
         }
-        mTransparencyManager.update();
     }
 
     @Override
@@ -2099,7 +2090,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         if (mPieControlPanel != null)
             mPieControlPanel.setMenu(showMenu);
 
-        mTransparencyManager.update();
         if (DEBUG) {
             Slog.d(TAG, (showMenu?"showing":"hiding") + " the MENU button");
         }

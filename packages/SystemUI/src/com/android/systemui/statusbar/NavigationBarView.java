@@ -67,9 +67,6 @@ import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.recent.RecentsActivity.NavigationCallback;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
-import com.android.systemui.TransparencyManager;
-import com.android.systemui.carbon.CarbonTarget;
-import com.android.systemui.statusbar.policy.ExtensibleKeyButtonView;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
 import com.android.systemui.statusbar.policy.key.RecentsKeyButtonView;
@@ -124,10 +121,6 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
      * 2 = Phablet UI
      */
     int mCurrentUIMode = 0;
-
-    int mNavigationBarColor = -1;
-
-    private TransparencyManager mTransparencyManager;
 
     public String[] mClickActions = new String[7];
     public String[] mLongpressActions = new String[7];
@@ -334,10 +327,6 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         }
     }
 
-    public void setTransparencyManager(TransparencyManager tm) {
-        mTransparencyManager = tm;
-    }
-
     private void makeBar() {
 
         ((LinearLayout) rot0.findViewById(R.id.nav_buttons)).removeAllViews();
@@ -410,16 +399,6 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                     addButton(navButtonLayout, generateKey(landscape, KEY_ARROW_LEFT), !landscape);
                     addButton(navButtonLayout, generateKey(landscape, KEY_ARROW_RIGHT), landscape);
             }
-        }
-
-        Drawable bg = mContext.getResources().getDrawable(R.drawable.nav_bar_bg);
-        if(bg instanceof ColorDrawable) {
-            BackgroundAlphaColorDrawable bacd = new BackgroundAlphaColorDrawable(
-                    mNavigationBarColor > 0 ? mNavigationBarColor : ((ColorDrawable) bg).getColor());
-            setBackground(bacd);
-        }
-        if(mTransparencyManager != null) {
-            mTransparencyManager.update();
         }
     }
 
@@ -639,23 +618,16 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                     : (mVertical ? mRecentsLandIcon : mRecentsIcon));
         }
 
-        if (getHomeButton()!=null) {
-        	getHomeButton().setAlpha(
-        			(0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
-        }
-        if (getRecentsButton()!=null) {
-        	getRecentsButton().setAlpha(
-        			(0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
-        }
-        setDisabledFlags(mDisabledFlags, true);
-    }
-
         updateMenuArrowKeys();
     }
 
     @Override
     public int getNavigationIconHints() {
         return mNavigationIconHints;
+    }
+
+    public void setDisabledFlags(int disabledFlags) {
+        setDisabledFlags(disabledFlags, false);
     }
 
     public void setDisabledFlags(int disabledFlags, boolean force) {
@@ -695,8 +667,8 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
             }
         }
-
-        getSearchLight().setVisibility(keygaurdProbablyEnabled ? View.VISIBLE : View.GONE);
+        getSearchLight().setVisibility((disableHome && !disableSearch) ? View.VISIBLE : View.GONE);
+        updateMenuArrowKeys();
     }
 
     public void setSlippery(boolean newSlippery) {
@@ -1063,7 +1035,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
             ContentResolver resolver = mContext.getContentResolver();
 
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_COLOR), false, this);
+                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_ALLCOLOR), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.MENU_LOCATION), false,
                     this);
@@ -1102,34 +1074,13 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         }
     }
 
-    /*
-     * ]0 < alpha < 1[
-     */
-    public void setBackgroundAlpha(float alpha) {
-        Drawable bg = getBackground();
-        if(bg == null) return;
-
-        if(bg instanceof BackgroundAlphaColorDrawable) {
-         // if there's a custom color while the lockscreen is on, clear it momentarily, otherwise it won't match.
-            if(mNavigationBarColor > 0) {
-                if(isKeyguardEnabled()) {
-                    ((BackgroundAlphaColorDrawable) bg).setBgColor(-1);
-                } else {
-                    ((BackgroundAlphaColorDrawable) bg).setBgColor(mNavigationBarColor);
-                }
-            }
-        }
-        int a = Math.round(alpha * 255);
-        bg.setAlpha(a);
-    }
-
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
         mMenuLocation = Settings.System.getInt(resolver,
                 Settings.System.MENU_LOCATION, SHOW_RIGHT_MENU);
-        mNavigationBarColor = Settings.System.getInt(resolver,
-                Settings.System.NAVIGATION_BAR_COLOR, -1);
+        mColorAllIcons = Settings.System.getBoolean(resolver,
+                Settings.System.NAVIGATION_BAR_ALLCOLOR, false);
         mMenuVisbility = Settings.System.getInt(resolver,
                 Settings.System.MENU_VISIBILITY, VISIBILITY_SYSTEM);
         mMenuArrowKeys = Settings.System.getBoolean(resolver,

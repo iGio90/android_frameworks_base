@@ -21,15 +21,6 @@ import android.app.StatusBarManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-import android.database.ContentObserver;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.os.Broadcaster;
-import android.os.Handler;
-import android.os.UserHandle;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
 import android.view.MotionEvent;
@@ -64,10 +55,6 @@ public class PhoneStatusBarView extends PanelBar {
             mSettingsPanelDragzoneFrac = 0f;
         }
         mFullWidthNotifications = mSettingsPanelDragzoneFrac <= 0f;
-        Drawable bg = mContext.getResources().getDrawable(R.drawable.status_bar_background);
-        if(bg instanceof ColorDrawable) {
-            setBackground(new BackgroundAlphaColorDrawable(((ColorDrawable) bg).getColor()));
-        }
     }
 
     public void setBar(PhoneStatusBar bar) {
@@ -238,16 +225,7 @@ public class PhoneStatusBarView extends PanelBar {
         if (panel.getAlpha() != alpha) {
             panel.setAlpha(alpha);
         }
-        updateBackgroundAlpha();
-        mBar.updateCarrierLabelVisibility(false);
-    }
 
-    private void updateBackgroundAlpha() {
-        if(mFadingPanel != null) {
-            mBar.mTransparencyManager.setTempStatusbarState(true);
-        } else {
-            mBar.mTransparencyManager.setTempStatusbarState(false);
-        }
-        mBar.mTransparencyManager.update();
+        mBar.updateCarrierLabelVisibility(false);
     }
 }

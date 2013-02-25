@@ -17,22 +17,6 @@
 
 package com.android.systemui.statusbar;
 
-import com.android.internal.statusbar.IStatusBarService;
-import com.android.internal.statusbar.StatusBarIcon;
-import com.android.internal.statusbar.StatusBarIconList;
-import com.android.internal.statusbar.StatusBarNotification;
-import com.android.internal.widget.SizeAdaptiveLayout;
-import com.android.systemui.R;
-import com.android.systemui.SearchPanelView;
-import com.android.systemui.SystemUI;
-import com.android.systemui.TransparencyManager;
-import com.android.systemui.recent.RecentTasksLoader;
-import com.android.systemui.recent.RecentsActivity;
-import com.android.systemui.recent.TaskDescription;
-import com.android.systemui.statusbar.policy.NotificationRowLayout;
-import com.android.systemui.statusbar.tablet.StatusBarPanel;
-import com.android.systemui.statusbar.WidgetView;
-
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.ActivityOptions;
@@ -209,8 +193,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected IWindowManager mWindowManagerService;
     protected Display mDisplay;
 
-    public TransparencyManager mTransparencyManager;
-
     private boolean mDeviceProvisioned = false;
 
     public void collapse() {
@@ -382,7 +364,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         } catch (RemoteException ex) {
             // If the system process isn't there we're doomed anyway.
         }
-        mTransparencyManager = new TransparencyManager(mContext);
+
         createAndAddWindows();
         // create WidgetView
         mWidgetView = new WidgetView(mContext,null);

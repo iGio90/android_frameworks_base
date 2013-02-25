@@ -4060,15 +4060,6 @@ public final class Settings {
          */
         public static final String STATUSBAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
 
-        /**
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_ALPHA_CONFIG = "navigation_bar_alpha_config";
-
-        /**
-         * @hide
-         */
-        public static final String STATUS_BAR_ALPHA_CONFIG = "status_bar_alpha_config";
     }
 
     /**
