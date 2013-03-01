@@ -35,6 +35,8 @@ import com.android.systemui.statusbar.GestureRecorder;
 
 public class NotificationPanelView extends PanelView {
 
+    private static final float STATUS_BAR_SETTINGS_FLIP_PERCENTAGE_LEFT = 0.85f;
+    private static final float STATUS_BAR_SETTINGS_FLIP_PERCENTAGE_RIGHT = 0.15f;
     private static final float STATUS_BAR_SETTINGS_LEFT_PERCENTAGE = 0.8f;
     private static final float STATUS_BAR_SETTINGS_RIGHT_PERCENTAGE = 0.2f;
     private static final float STATUS_BAR_SWIPE_TRIGGER_PERCENTAGE = 0.05f;
@@ -149,7 +151,8 @@ public class NotificationPanelView extends PanelView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean shouldRecycleEvent = false;
-        if (PhoneStatusBar.SETTINGS_DRAG_SHORTCUT && mStatusBar.mHasFlipSettings) {
+        if (PhoneStatusBar.SETTINGS_DRAG_SHORTCUT
+                && mStatusBar.mHasFlipSettings) {
             boolean flip = false;
             boolean swipeFlipJustFinished = false;
             boolean swipeFlipJustStarted = false;
@@ -169,6 +172,22 @@ public class NotificationPanelView extends PanelView {
                             Settings.System.getInt(getContext().getContentResolver(),
                                     Settings.System.QS_QUICK_PULLDOWN, 0) == 2) {
                         flip = true;
+                    } else if (mFastTogglePos == 1) {
+                        if ((event.getX(0) > getWidth()
+                                * (1.0f - STATUS_BAR_SETTINGS_FLIP_PERCENTAGE_RIGHT)
+                                && mFastToggleEnabled)
+                            || (mStatusBar.skipToSettingsPanel())
+                                && !mFastToggleEnabled) {
+                            flip = true;
+                        }
+                    } else if (mFastTogglePos == 2) {
+                        if ((event.getX(0) < getWidth()
+                                * (1.0f - STATUS_BAR_SETTINGS_FLIP_PERCENTAGE_LEFT)
+                                && mFastToggleEnabled)
+                            || (mStatusBar.skipToSettingsPanel())
+                                && !mFastToggleEnabled) {
+                            flip = true;
+                        }
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
