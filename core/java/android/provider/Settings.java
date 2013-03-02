@@ -2045,7 +2045,7 @@ public final class Settings {
          */
         public static final Uri DEFAULT_RINGTONE_URI = getUriFor(RINGTONE);
 
-        public static final Uri DEFAULT_VIBRATION_URI = Uri.parse("content://com.aokp.romcontrol.Vibrations/vibrations/0");
+        public static final Uri DEFAULT_VIBRATION_URI = Uri.parse("content://com.android.settings.jellybam.Vibrations/vibrations/0");
 
         public static final String PHONE_VIBRATION = "phone_vibration";
 
