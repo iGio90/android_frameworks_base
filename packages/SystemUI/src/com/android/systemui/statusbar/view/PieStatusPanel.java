@@ -264,7 +264,7 @@ public class PieStatusPanel {
 
     public void showNotificationsPanel() {
         showPanel(mNotificationPanel);
-        ShowClearAll(false)
+        ShowClearAll(false);
     }
 
     public void hideTilesPanel() {
