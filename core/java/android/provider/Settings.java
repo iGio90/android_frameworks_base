@@ -3037,15 +3037,44 @@ public final class Settings {
          * Quick Settings Panel Tiles to Use
          * @hide
          */
-        public static final String QUICK_SETTINGS_TILES = "quick_settings_tiles";
+        public static final String QUICK_SETTINGS = "quick_settings";
 
         /**
-         * QuickSettings panel dynamic alarm tile
+         * Quick Settings Panel Dynamic Tiles
+         *
          * @hide
          */
         public static final String QS_DYNAMIC_ALARM = "qs_dyanmic_alarm";
 
-	/**
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_BUGREPORT = "qs_dyanmic_bugreport";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_IME = "qs_dyanmic_ime";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_USBTETHER = "qs_dyanmic_usbtether";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_WIFI = "qs_dyanmic_wifi";
+
+        /**
          * Quick Settings Quick Pulldown
          *
          * @hide
@@ -3053,22 +3082,17 @@ public final class Settings {
         public static final String QS_QUICK_PULLDOWN = "qs_quick_pulldown";
 
         /**
-         * QuickSettings panel dynamic bug-report tile
+         * Quick Settings Collapse Pane
+         *
          * @hide
          */
-        public static final String QS_DYNAMIC_BUGREPORT = "qs_dyanmic_bugreport";
+        public static final String QS_COLLAPSE_PANEL = "qs_collapse_panel";
 
         /**
-         * QuickSettings panel dynamic IME tile
+         * Weather to minimize lockscreen challenge on screen turned on
          * @hide
          */
-        public static final String QS_DYNAMIC_IME = "qs_dyanmic_ime";
-
-        /**
-         * QuickSettings panel dynamic wifi tile
-         * @hide
-         */
-        public static final String QS_DYNAMIC_WIFI = "qs_dyanmic_wifi";
+        public static final String LOCKSCREEN_MAXIMIZE_WIDGETS = "lockscreen_maximize_widgets";
 
         /**
          * Volume keys control cursor in text fields (default is 0)

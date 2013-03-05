@@ -48,6 +48,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.IPowerManager;
@@ -220,12 +221,13 @@ public class PhoneStatusBar extends BaseStatusBar {
     TextView mNotificationPanelDebugText;
 
     // settings
-    QuickSettings mQS;
+    QuickSettingsController mQS;
     boolean mHasSettingsPanel, mHasFlipSettings;
     SettingsPanelView mSettingsPanel;
     View mFlipSettingsView;
     QuickSettingsContainerView mSettingsContainer;
     int mSettingsPanelGravity;
+    private TilesChangedObserver mTilesChangedObserver;
 
     // top bar
     View mNotificationPanelHeader;
@@ -713,18 +715,24 @@ public class PhoneStatusBar extends BaseStatusBar {
             // wherever you find it, Quick Settings needs a container to survive
             mSettingsContainer = (QuickSettingsContainerView)
                     mStatusBarWindow.findViewById(R.id.quick_settings_container);
+
+            android.util.Log.d("PARANOID", "mSettingsContainer="+mSettingsContainer);
+
+            // wherever you find it, Quick Settings needs a container to survive
+            mSettingsContainer = (QuickSettingsContainerView)
+                    mStatusBarWindow.findViewById(R.id.quick_settings_container);
             if (mSettingsContainer != null) {
-                mQS = new QuickSettings(mContext, mSettingsContainer, this);
-                if (!mNotificationPanelIsFullScreenWidth) {
-                    mSettingsContainer.setSystemUiVisibility(
-                            View.STATUS_BAR_DISABLE_NOTIFICATION_TICKER
-                            | View.STATUS_BAR_DISABLE_SYSTEM_INFO);
-                }
+                mQS = new QuickSettingsController(mContext, mSettingsContainer, this);
                 if (mSettingsPanel != null) {
                     mSettingsPanel.setQuickSettings(mQS);
                 }
+                mQS.setService(this);
                 mQS.setBar(mStatusBarView);
                 mQS.setupQuickSettings();
+
+                // Start observing for changes
+                mTilesChangedObserver = new TilesChangedObserver(mHandler);
+                mTilesChangedObserver.startObserving();
 
             } else {
                 mQS = null; // fly away, be free
@@ -2937,104 +2945,53 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
     }
 
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
+    /**
+     *  ContentObserver to watch for Quick Settings tiles changes
+     * @author dvtonder
+     *
+     */
+    private class TilesChangedObserver extends ContentObserver {
+        public TilesChangedObserver(Handler handler) {
             super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
-            update();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[shortClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[longClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_CLOCK[doubleClick]), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.CURRENT_UI_MODE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE), false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER), false, this, UserHandle.USER_ALL);
         }
 
         @Override
         public void onChange(boolean selfChange) {
-            update();
-            updateSettings();
+            onChange(selfChange, null);
         }
 
-        public void update() {
-            ContentResolver resolver = mContext.getContentResolver();
-            boolean autoBrightness = Settings.System.getInt(
-                    resolver, Settings.System.SCREEN_BRIGHTNESS_MODE, 0) ==
-                    Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
-            mBrightnessControl = !autoBrightness && Settings.System.getInt(
-                    resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0) == 1;
-            mNotificationShortcutsToggle = Settings.System.getIntForUser(resolver,
-                    Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE, 0, UserHandle.USER_CURRENT) != 0;
-            mNotificationShortcutsHideCarrier = Settings.System.getIntForUser(resolver,
-                    Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER, 0, UserHandle.USER_CURRENT) != 0;
-            if (mCarrierLabel != null) {
-                toggleCarrierLabelVisibility();
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            if (mSettingsContainer != null) {
+                mQS.setupQuickSettings();
             }
         }
-    }
 
-    protected void updateSettings() {
-        ContentResolver cr = mContext.getContentResolver();
+        public void startObserving() {
+            final ContentResolver cr = mContext.getContentResolver();
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QUICK_SETTINGS),
+                    false, this);
 
-        mClockActions[shortClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[shortClick]);
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_ALARM),
+                    false, this);
 
-        mClockActions[longClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[longClick]);
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_BUGREPORT),
+                    false, this);
 
-        mClockActions[doubleClick] = Settings.System.getString(cr,
-                Settings.System.NOTIFICATION_CLOCK[doubleClick]);
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_IME),
+                    false, this);
 
-        if (mClockActions[shortClick]  == null ||mClockActions[shortClick].equals("")) {
-            mClockActions[shortClick] = "**clockoptions**";
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_USBTETHER),
+                    false, this);
+
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_WIFI),
+                    false, this);
         }
-        if (mClockActions[longClick]  == null || mClockActions[longClick].equals("")) {
-            mClockActions[longClick] = "**null**";
-		}
-        if (mClockActions[doubleClick] == null || mClockActions[doubleClick].equals("") || mClockActions[doubleClick].equals("**null**")) {
-            mClockActions[doubleClick] = "**null**";
-            mClockDoubleClicked = false;
-		} else {
-            mClockDoubleClicked = true;
-        }
-        mCurrentUIMode = Settings.System.getInt(cr,
-                Settings.System.CURRENT_UI_MODE, 0);
-    }
-
-    public boolean skipToSettingsPanel() {
-        if (mPile == null || mNotificationData == null) return false;
-
-        int N = mNotificationData.size();
-        int thisUsersNotifications = 0;
-        for (int i=0; i<N; i++) {
-            Entry ent = mNotificationData.get(N-i-1);
-            if(ent != null
-                    && ent.notification != null
-                    && notificationIsForCurrentUser(ent.notification)) {
-                switch(ent.notification.id) {
-                    // ignore adb icon
-                    case com.android.internal.R.drawable.stat_sys_adb:
-                        continue;
-                }
-                thisUsersNotifications++;
-            }
-        }
-        if(thisUsersNotifications == 0)
-            return true;
-
-        return false;
     }
 }
