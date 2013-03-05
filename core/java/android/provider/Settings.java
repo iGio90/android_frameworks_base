@@ -3492,6 +3492,14 @@ public final class Settings {
 
         /* What brightness to use for the notificaion LED
          *
+        /**
+         * Restart Launcher
+         * @hide
+         */
+        public static final String EXPANDED_DESKTOP_RESTART_LAUNCHER = "expanded_desktop_restart_launcher";
+
+        /**
+         * Pie menu, should default to 1 (yes, show)
          * @hide
          */
         public static final String LED_BRIGHTNESS = "led_brightness";
