@@ -374,6 +374,13 @@
          This will disable all third party applications you have installed.
          They will be restored when you reboot again.</string>
 
+    <!-- QuickSettings: Desktop Mode [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_desktop_mode_label">Desktop Mode</string>
+    <!-- QuickSettings: Desktop Mode default [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_desktop_mode_default">Default</string>
+    <!-- QuickSettings: Desktop Mode Pie [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_desktop_mode_full">Full/Pie</string>
+
     <!-- Recent Tasks dialog: title
      TODO: this should move to SystemUI.apk, but the code for the old
             recent dialog is still in the framework
