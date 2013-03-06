@@ -726,7 +726,7 @@ static jint androidFmRadioRxGetSignalStrength(JNIEnv * env, jobject obj)
         androidFmRadioTempResumeIfPaused(&fmReceiverSession);
 
         retval =
-            fmReceiverSession.vendorMethods_p->
+	    fmReceiverSession.vendorMethods_p->
             get_signal_strength(&fmReceiverSession.vendorData_p);
 
         if (retval < 0) {
@@ -1362,8 +1362,11 @@ static void androidFmRadioRxSetRDS(JNIEnv * env, jobject obj,
         /* if in pause state temporary resume */
         androidFmRadioTempResumeIfPaused(&fmReceiverSession);
 
+        /* temporary unlock to avoid deadlock with RDS callback */
+        pthread_mutex_unlock(fmReceiverSession.dataMutex_p);
         retval = fmReceiverSession.vendorMethods_p->
             set_rds_reception(&fmReceiverSession.vendorData_p, receiveRDS);
+        pthread_mutex_lock(fmReceiverSession.dataMutex_p);
 
         androidFmRadioPauseIfTempResumed(&fmReceiverSession);
     } else {
