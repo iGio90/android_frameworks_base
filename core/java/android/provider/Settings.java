@@ -1852,7 +1852,7 @@ public final class Settings {
         /**
          * Ability to enable/disable Daul pane prefs.
          */
-        public static final String DUAL_PANE_PREFS = "dual_pane_prefs";
+        public static final String FORCE_DUAL_PANEL = "dual_pane_prefs";
 
         /**
          * Determines which streams are affected by ringer mode changes. The
