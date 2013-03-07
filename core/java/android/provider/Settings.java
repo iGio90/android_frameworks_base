@@ -3086,7 +3086,31 @@ public final class Settings {
          *
          * @hide
          */
-        public static final String QS_COLLAPSE_PANEL = "qs_collapse_panel";
+         public static final String QS_COLLAPSE_PANEL = "qs_collapse_panel";
+
+        /**
+         * Sets the portrait background of notification drawer
+         * @hide
+         */
+         public static final String NOTIFICATION_BACKGROUND = "notification_background";
+
+        /**
+         * Sets the landscape background of notification drawer
+         * @hide
+         */
+         public static final String NOTIFICATION_BACKGROUND_LANDSCAPE = "notification_background_landscape";
+
+        /**
+         * Sets the alpha (transparency) of notification wallpaper
+         * @hide
+         */
+         public static final String NOTIF_WALLPAPER_ALPHA = "notif_wallpaper_alpha";
+
+        /**
+         * Sets the alpha (transparency) of notifications
+         * @hide
+         */
+         public static final String NOTIF_ALPHA = "notif_alpha";
 
         /**
          * Weather to minimize lockscreen challenge on screen turned on
@@ -3318,12 +3342,6 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";
-
-        /**
-         * Sets the alpha (transparency) of notification wallpaper
-         * @hide
-         */
-        public static final String NOTIF_WALLPAPER_ALPHA = "notif_wallpaper_alpha";
 
         /**
          * Holds the text for the Carrier label. An empty string
