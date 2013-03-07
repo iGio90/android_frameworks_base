@@ -59,6 +59,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.os.Vibrator;
+import android.text.TextUtils;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
@@ -89,7 +90,8 @@ import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.tablet.TabletStatusBar;
 import com.android.systemui.aokp.AwesomeAction;
 
-import com.android.internal.util.aokp.NavRingHelpers;
+import com.android.internal.util.jellybam.NavRingHelpers;
+import static com.android.internal.util.jellybam.AwesomeConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,6 +122,7 @@ public class SearchPanelView extends FrameLayout implements
     private int startPosOffset;
 
     private int mNavRingAmount;
+    private int mCurrentUIMode;
     private boolean mLefty;
     private boolean mBoolLongPress;
     private boolean mSearchPanelLock;
@@ -301,33 +304,47 @@ public class SearchPanelView extends FrameLayout implements
     private void setDrawables() {
         mLongPress = false;
         mSearchPanelLock = false;
+
         String tgtCenter = Settings.System.getString(mContext.getContentResolver(), Settings.System.SYSTEMUI_NAVRING[0]);
         if (TextUtils.isEmpty(tgtCenter)) {
- 	 320 + Settings.System.putString(mContext.getContentResolver(), Settings.System.SYSTEMUI_NAVRING[0], AwesomeConstant.ACTION_ASSIST.value()); 320 321
+            Settings.System.putString(mContext.getContentResolver(), Settings.System.SYSTEMUI_NAVRING[0], AwesomeConstant.ACTION_ASSIST.value());
         }
 
         // Custom Targets
         ArrayList<TargetDrawable> storedDraw = new ArrayList<TargetDrawable>();
 
-        int endPosOffset;
+        int endPosOffset = 0;
         int middleBlanks = 0;
 
-         if (screenLayout() == Configuration.SCREENLAYOUT_SIZE_LARGE || isScreenPortrait()) {
-             startPosOffset =  1;
-             endPosOffset =  (mNavRingAmount) + 1;
-         } else {
-            // next is landscape for lefty navbar is on left
-                if (mLefty) {
-                    startPosOffset =  1 - (mNavRingAmount % 2);
-                    middleBlanks = mNavRingAmount + 2;
-                    endPosOffset = 0;
+        switch (mCurrentUIMode) {
+            case 0 : // Phone Mode
+                if (isScreenPortrait()) { // NavRing on Bottom
+                    startPosOffset =  1;
+                    endPosOffset =  (mNavRingAmount) + 1;
+                } else if (mLefty) { // either lefty or... (Ring is actually on right side of screen)
+                        startPosOffset =  1 - (mNavRingAmount % 2);
+                        middleBlanks = mNavRingAmount + 2;
+                        endPosOffset = 0;
 
-                } else {
-                //lastly the standard landscape with navbar on right
+                } else { // righty... (Ring actually on left side of tablet)
                     startPosOffset =  (Math.min(1,mNavRingAmount / 2)) + 2;
                     endPosOffset =  startPosOffset - 1;
                 }
-        }
+                break;
+            case 1 : // Tablet Mode
+                if (mLefty) { // either lefty or... (Ring is actually on right side of screen)
+                    startPosOffset =  (mNavRingAmount) + 1;
+                    endPosOffset =  (mNavRingAmount *2) + 1;
+                } else { // righty... (Ring actually on left side of tablet)
+                    startPosOffset =  1;
+                    endPosOffset = (mNavRingAmount * 3) + 1;
+                }
+                break;
+            case 2 : // Phablet Mode - Search Ring stays at bottom
+                startPosOffset =  1;
+                endPosOffset =  (mNavRingAmount) + 1;
+                break;
+         } 
 
         intentList.clear();
         longList.clear();
@@ -345,7 +362,7 @@ public class SearchPanelView extends FrameLayout implements
         for (int i = 0; i < startPosOffset; i++) {
             storedDraw.add(NavRingHelpers.getTargetDrawable(mContext, null));
             intentList.add(AwesomeConstant.ACTION_NULL.value());
-            longList.add(AwesomeConstant.ACTION_NULL.value())
+            longList.add(AwesomeConstant.ACTION_NULL.value());
         }
         // Add User Targets
         for (int i = 0; i < middleStart; i++) {
@@ -612,5 +629,8 @@ public class SearchPanelView extends FrameLayout implements
 
         mNavRingAmount = Settings.System.getInt(mContext.getContentResolver(),
                          Settings.System.SYSTEMUI_NAVRING_AMOUNT, 1);
+        // Not using getBoolean here, because CURRENT_UI_MODE can be 0,1 or 2
+        mCurrentUIMode = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.CURRENT_UI_MODE, 0);
     }
 }
