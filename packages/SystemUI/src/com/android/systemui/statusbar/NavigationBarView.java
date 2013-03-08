@@ -64,8 +64,6 @@ import java.math.BigInteger;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.aokp.AwesomeAction;
-import com.android.systemui.aokp.NavBarHelpers;
-import static com.android.internal.util.jellybam.AwesomeConstants.*;
 import com.android.systemui.recent.RecentsActivity.NavigationCallback;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
@@ -103,7 +101,6 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
     private boolean mColorAllIcons;
     
     public DelegateViewHelper mDelegateHelper;
-    private Context mContext;
 
     private Canvas mCurrentCanvas;
     private Canvas mNewCanvas;
@@ -131,21 +128,21 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
     public final static int StockButtonsQty = 3;
     public final static String[] StockClickActions = {
-        AwesomeConstant.ACTION_BACK.value(),
-        AwesomeConstant.ACTION_HOME.value(),
-        AwesomeConstant.ACTION_RECENTS.value(),
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value() };
+        AwesomeAction.ACTION_BACK,
+        AwesomeAction.ACTION_HOME,
+        AwesomeAction.ACTION_RECENTS,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL };
     public final static String[] StockLongpress = {
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value(),
-        AwesomeConstant.ACTION_NULL.value() };
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL,
+        AwesomeAction.ACTION_NULL };
 
     FrameLayout rot0;
     FrameLayout rot90;
@@ -365,7 +362,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                     }
                     v.setTint(mColorAllIcons);
                 } else {
-                    v.setImageDrawable(NavBarHelpers.getIconImage(mContext, mClickActions[j]));
+                    v.setImageDrawable(AwesomeAction.getInstance(mContext).getIconImage(mClickActions[j]));
                     v.setTint(mClickActions[j].startsWith("**") || mColorAllIcons);
                 }
                 addButton(navButtonLayout, v, landscape && !mLeftyMode);
@@ -513,7 +510,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
         final int iconSize = 80;
         ExtensibleKeyButtonView v = null;
-        if(clickAction.equals(AwesomeConstant.ACTION_RECENTS)) {
+        if(AwesomeAction.ACTION_RECENTS.equals(clickAction)) {
             v = new RecentsKeyButtonView(mContext, null, clickAction, longpress);
         } else {
             v = new ExtensibleKeyButtonView(mContext, null, clickAction,

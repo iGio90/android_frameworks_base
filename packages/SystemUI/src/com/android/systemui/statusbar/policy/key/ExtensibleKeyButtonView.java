@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 
-import static com.android.internal.util.jellybam.AwesomeConstants.*;
 import com.android.systemui.R;
 import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.statusbar.policy.KeyButtonView;
@@ -26,29 +25,21 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
 
     public void setActions(String clickAction, String longPress) {
         if (clickAction != null) {
-            AwesomeConstant clickEnum = fromString(clickAction);
-            switch (clickEnum) {
-            case ACTION_HOME:
+            if (clickAction.equals(AwesomeAction.ACTION_HOME)) {
                 setCode(KeyEvent.KEYCODE_HOME);
                 setId(R.id.home);
-                break;
-            case ACTION_BACK:
+            } else if (clickAction.equals(AwesomeAction.ACTION_BACK)) {
                 setCode(KeyEvent.KEYCODE_BACK);
                 setId(R.id.back);
-                break;
-            case ACTION_MENU:
+            } else if (clickAction.equals(AwesomeAction.ACTION_MENU)) {
                 setCode(KeyEvent.KEYCODE_MENU);
                 setId(R.id.navbar_menu_big);
-                break;
-            case ACTION_POWER:
+            } else if (clickAction.equals(AwesomeAction.ACTION_POWER)) {
                 setCode(KeyEvent.KEYCODE_POWER);
-                break;
-            case ACTION_SEARCH:
+            } else if (clickAction.equals(AwesomeAction.ACTION_SEARCH)) {
                 setCode(KeyEvent.KEYCODE_SEARCH);
-                break;
-            default:
+            } else {
                 setOnClickListener(mClickListener);
-                break;
             }
         }
     }
@@ -56,7 +47,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
     protected void setLongPress() {
         setSupportsLongPress(false);
         if (mLongpress != null) {
-            if ((!mLongpress.equals(AwesomeConstant.ACTION_NULL)) || (getCode() != 0)) {
+            if ((!mLongpress.equals(AwesomeAction.ACTION_NULL)) || (getCode() != 0)) {
                 // I want to allow long presses for defined actions, or if
                 // primary action is a 'key' and long press isn't defined
                 // otherwise
@@ -69,14 +60,14 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
     protected OnClickListener mClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            AwesomeAction.launchAction(mContext, mClickAction);
+            AwesomeAction.getInstance(mContext).launchAction(mClickAction);
         }
     };
 
     protected OnLongClickListener mLongPressListener = new OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-            return AwesomeAction.launchAction(mContext, mLongpress);
+            return AwesomeAction.getInstance(mContext).launchAction(mLongpress);
         }
     };
 }
