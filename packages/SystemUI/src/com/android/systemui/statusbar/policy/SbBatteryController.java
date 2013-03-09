@@ -171,32 +171,31 @@ public class SbBatteryController extends LinearLayout {
         int icon;
         switch (mBatteryStyle) {
             case STYLE_ICON_CIRCLE:
-                 icon = plugged ? R.drawable.stat_sys_battery_charge_circle
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge_circle
                  : R.drawable.stat_sys_battery_circle;
                  break;
             case STYLE_ICON_CIRCLE_RB:
-                 icon = plugged ? R.drawable.stat_sys_battery_charge_altcircle
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge_altcircle
                  : R.drawable.stat_sys_battery_altcircle;
                  break;
             default:
-                 icon = plugged ? R.drawable.stat_sys_battery_charge
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge
                  : R.drawable.stat_sys_battery;
                  break;
         }
         int N = mIconViews.size();
         for (int i = 0; i < N; i++) {
             ImageView v = mIconViews.get(i);
-            Drawable batteryBitmap = mContext.getResources().getDrawable(mIcon);
-            if (mColorInfo.isLastColorNull) {
-                batteryBitmap.clearColorFilter();                
-            } else {
-                batteryBitmap.setColorFilter(mColorInfo.lastColor, PorterDuff.Mode.SRC_IN);
-            }
-            v.setImageDrawable(batteryBitmap);
+            v.setImageResource(icon);
+            v.setImageLevel(mLevel);
+            v.setContentDescription(mContext.getString(
+                    R.string.accessibility_battery_level, mLevel));
         }
         N = mLabelViews.size();
         for (int i = 0; i < N; i++) {
             TextView v = mLabelViews.get(i);
+            v.setText(mContext.getString(
+                    R.string.status_bar_settings_battery_meter_format, mLevel));
         }
 
         // do my stuff here
@@ -239,6 +238,7 @@ public class SbBatteryController extends LinearLayout {
                 mBatteryTextOnly_Plugged.setVisibility(View.GONE);
                 mBatteryTextOnly_Low.setVisibility(View.GONE);
             }
+
         }
     }
 
@@ -308,7 +308,7 @@ public class SbBatteryController extends LinearLayout {
                 mBatteryCenterText.setVisibility(View.GONE);
                 mBatteryIcon.setVisibility(View.VISIBLE);
                 setVisibility(View.VISIBLE);
-                break;
+               break;
             default:
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);
