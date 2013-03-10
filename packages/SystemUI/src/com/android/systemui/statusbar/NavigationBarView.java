@@ -61,7 +61,7 @@ import android.widget.LinearLayout;
 
 import java.math.BigInteger;
 
-import static com.android.internal.util.aokp.AwesomeConstants.*;
+import static com.android.internal.util.jellybam.AwesomeConstants.*;
 import com.android.systemui.aokp.NavBarHelpers;
 
 import com.android.internal.statusbar.IStatusBarService;

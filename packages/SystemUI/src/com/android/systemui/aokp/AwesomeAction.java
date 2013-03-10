@@ -54,7 +54,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-import static com.android.internal.util.aokp.AwesomeConstants.*;
+import static com.android.internal.util.jellybam.AwesomeConstants.*;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.R;
 

@@ -69,7 +69,7 @@ public class ExtensibleKeyButtonView extends KeyButtonView {
     protected OnClickListener mClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-	    AwesomeAction.getInstance(mContext).launchAction(mClickAction);
+            AwesomeAction.launchAction(mContext, mClickAction);
         }
     };
 
