@@ -94,6 +94,8 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
     boolean mVertical;
     boolean mScreenOn;
 
+    private boolean isRotating = false;
+
     boolean mHidden, mLowProfile, mShowMenu;
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
@@ -888,15 +890,13 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
         // force the low profile & disabled states into compliance
         setLowProfile(mLowProfile, false, true /* force */);
+        isRotating = true;
         setDisabledFlags(mDisabledFlags, true /* force */);
         setMenuVisibility(mShowMenu, true /* force */);
         setNavigationIconHints(mNavigationIconHints, true);
         if (DEBUG) {
             Slog.d(TAG, "reorient(): rot=" + mDisplay.getRotation());
         }
-        // Reset recents hints after reorienting
-        ((ImageView)getRecentsButton()).setImageDrawable(mVertical
-                ? mRecentsLandIcon : mRecentsIcon);
     }
 
     @Override
