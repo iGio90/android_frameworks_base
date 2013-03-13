@@ -1186,8 +1186,8 @@ public class LockPatternView extends View {
             mInputEnabled = inputEnabled;
             mInStealthMode = inStealthMode;
             mTactileFeedbackEnabled = tactileFeedbackEnabled;
-            mVisibleDots = (Boolean) in.readValue(null);
-            mShowErrorPath = (Boolean) in.readValue(null);
+            mVisibleDots = visibleDots;
+            mShowErrorPath = showErrorPath;
         }
 
         /**
@@ -1201,6 +1201,8 @@ public class LockPatternView extends View {
             mInputEnabled = (Boolean) in.readValue(null);
             mInStealthMode = (Boolean) in.readValue(null);
             mTactileFeedbackEnabled = (Boolean) in.readValue(null);
+            mVisibleDots = (Boolean) in.readValue(null);
+            mShowErrorPath = (Boolean) in.readValue(null);
         }
 
         public String getSerializedPattern() {
