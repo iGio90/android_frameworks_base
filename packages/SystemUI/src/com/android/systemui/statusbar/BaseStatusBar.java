@@ -100,6 +100,7 @@ import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.view.PieStatusPanel;
+import com.android.systemui.statusbar.view.PieExpandPanel;
 import com.android.systemui.statusbar.WidgetView;
 
 import java.util.ArrayList;
@@ -156,7 +157,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     // Pie controls
     public PieControlPanel mPieControlPanel;
     public View mPieControlsTrigger;
-    public View mContainer;
+    public PieExpandPanel mContainer;
     int mIndex;
 
     // Policy
@@ -208,6 +209,14 @@ public abstract class BaseStatusBar extends SystemUI implements
         return null;
     }
 
+    public Handler getHandler() {
+        return mHandler;
+    }
+
+    public IStatusBarService getService() {
+        return mBarService;
+    }
+
     public NotificationData getNotificationData() {
         return mNotificationData;
     }
@@ -231,8 +240,8 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.PIE_GRAVITY), false, this);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PIE_CONTROLS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PIE_TRIGGER), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -485,6 +494,16 @@ public abstract class BaseStatusBar extends SystemUI implements
                             }
                         }
                     }});
+
+            // Listen for PIE gravity
+            mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.PIE_GRAVITY), false, new ContentObserver(new Handler()) {
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        if (Settings.System.getInt(mContext.getContentResolver(),
+                                Settings.System.PIE_STICK, 1) == 0) {
+                            updatePieControls();
+                        }}});
         }
 
         attachPie();
@@ -494,12 +513,10 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     private boolean showPie() {
-        boolean expanded = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
-        boolean navbarZero = Integer.parseInt(ExtendedPropertiesUtils
-                .getProperty("com.android.systemui.navbar.dpi", "100")) == 0;
+        boolean pie = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.PIE_CONTROLS, 0) == 1;
 
-        return (expanded || navbarZero);
+        return (pie);
     }
 
     public void updatePieControls() {
@@ -514,7 +531,8 @@ public abstract class BaseStatusBar extends SystemUI implements
                 // Add panel window, one to be used by all pies that is
                 LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
-                mContainer = inflater.inflate(R.layout.pie_expanded_panel, null);
+                mContainer = (PieExpandPanel)inflater.inflate(R.layout.pie_expanded_panel, null);
+                mContainer.init(mPile, mContainer.findViewById(R.id.content_scroll));
                 mWindowManager.addView(mContainer, PieStatusPanel.getFlipPanelLayoutParams());
             }
 
@@ -585,7 +603,8 @@ public abstract class BaseStatusBar extends SystemUI implements
               WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL,
                       WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                       | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                      | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                      | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
+                      | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
               PixelFormat.TRANSLUCENT);
         lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;

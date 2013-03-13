@@ -17,12 +17,14 @@
 package com.android.systemui.statusbar;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.pm.ResolveInfo;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -40,6 +42,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Surface;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -47,6 +50,8 @@ import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.PanelBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
 import com.android.systemui.statusbar.PieControl.OnNavButtonPressedListener;
+
+import java.util.List;
 
 public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNavButtonPressedListener {
 
@@ -62,6 +67,7 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
     private int mHeight;
     private View mTrigger;
     private WindowManager mWindowManager;
+    private Display mDisplay;
     
     ViewGroup mContentFrame;
     Rect mContentArea = new Rect();
@@ -76,6 +82,7 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
         super(context, attrs);
         mContext = context;
         mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+        mDisplay = mWindowManager.getDefaultDisplay();
         mPieControl = new PieControl(context, this);
         mPieControl.setOnNavButtonPressedListener(this);
         mOrientation = Gravity.BOTTOM;
@@ -127,7 +134,38 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
         super.onAttachedToWindow();
     }
 
+    static private int[] gravityArray = {Gravity.BOTTOM, Gravity.LEFT, Gravity.TOP, Gravity.RIGHT, Gravity.BOTTOM, Gravity.LEFT};
+    static public int findGravityOffset(int gravity) {    
+        for (int gravityIndex = 1; gravityIndex < gravityArray.length - 2; gravityIndex++) {
+            if (gravity == gravityArray[gravityIndex])
+                return gravityIndex;
+        }
+        return 4;
+    }
+
     public void bumpConfiguration() {
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.PIE_STICK, 1) == 1) {
+
+            // Get original offset
+            int gravityIndex = findGravityOffset(convertPieGravitytoGravity(
+                    Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.PIE_GRAVITY, 3)));
+            
+            // Orient Pie to that place
+            reorient(gravityArray[gravityIndex], false);
+
+            // Now re-orient it for landscape orientation
+            switch(mDisplay.getRotation()) {
+                case Surface.ROTATION_270:
+                    reorient(gravityArray[gravityIndex + 1], false);
+                    break;
+                case Surface.ROTATION_90:
+                    reorient(gravityArray[gravityIndex - 1], false);
+                    break;
+            }
+        }
+
         show(false);
         if (mPieControl != null) mPieControl.onConfigurationChanged();
     }
@@ -140,28 +178,51 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
         mPieControl.init();
     }
 
-    public void reorient(int orientation) {
+    static public int convertGravitytoPieGravity(int gravity) {
+        switch(gravity) {
+            case Gravity.LEFT:  return 0;
+            case Gravity.TOP:   return 1;
+            case Gravity.RIGHT: return 2;
+            default:            return 3;
+        }
+    }
+
+    static public int convertPieGravitytoGravity(int gravity) {
+        switch(gravity) {
+            case 0:  return Gravity.LEFT;
+            case 1:  return Gravity.TOP;
+            case 2:  return Gravity.RIGHT;
+            default: return Gravity.BOTTOM;
+        }
+    }
+
+    public void reorient(int orientation, boolean storeSetting) {
         mOrientation = orientation;
         mWindowManager.removeView(mTrigger);
         mWindowManager.addView(mTrigger, BaseStatusBar
                 .getPieTriggerLayoutParams(mContext, mOrientation));
         show(mShowing);
+        if (storeSetting) {
+            int gravityOffset = mOrientation;
+            if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.PIE_STICK, 1) == 1) {
 
-        int pieGravity = 3;
-        switch(mOrientation) {
-            case Gravity.LEFT:
-                pieGravity = 0;
-                break;
-            case Gravity.TOP:
-                pieGravity = 1;
-                break;
-            case Gravity.RIGHT:
-                pieGravity = 2;
-                break;
+                gravityOffset = findGravityOffset(mOrientation);
+                switch(mDisplay.getRotation()) {
+                    case Surface.ROTATION_270:
+                        gravityOffset = gravityArray[gravityOffset - 1];
+                        break;
+                    case Surface.ROTATION_90:
+                        gravityOffset = gravityArray[gravityOffset + 1];
+                        break;
+                    default:
+                        gravityOffset = mOrientation;
+                        break;
+                }
+            }
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.PIE_GRAVITY, convertGravitytoPieGravity(gravityOffset));
         }
-
-        Settings.System.putInt(mContext.getContentResolver(),
-            Settings.System.PIE_GRAVITY, pieGravity);
     }
 
     @Override
@@ -233,10 +294,10 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
             injectKeyDelayed(KeyEvent.KEYCODE_MENU);
         } else if (buttonName.equals(PieControl.RECENT_BUTTON)) {
             mStatusBar.toggleRecentApps();
-        } else if (buttonName.equals(PieControl.CLEAR_ALL_BUTTON)) {
-            mStatusBar.clearRecentApps();
         } else if (buttonName.equals(PieControl.SEARCH_BUTTON)) {
             launchAssistAction();
+        } else if (buttonName.equals(PieControl.LAST_APP_BUTTON)) {
+            toggleLastApp();
         }
     }
 
@@ -257,6 +318,34 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
                         new UserHandle(UserHandle.USER_CURRENT));
             } catch (ActivityNotFoundException e) {
             }
+        }
+    }
+
+    private void toggleLastApp() {
+        int lastAppId = 0;
+        int looper = 1;
+        String packageName;
+        final Intent intent = new Intent(Intent.ACTION_MAIN);
+        final ActivityManager am = (ActivityManager) mContext
+                .getSystemService(Activity.ACTIVITY_SERVICE);
+        String defaultHomePackage = "com.android.launcher";
+        intent.addCategory(Intent.CATEGORY_HOME);
+        final ResolveInfo res = mContext.getPackageManager().resolveActivity(intent, 0);
+        if (res.activityInfo != null && !res.activityInfo.packageName.equals("android")) {
+            defaultHomePackage = res.activityInfo.packageName;
+        }
+        List <ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(5);
+        // lets get enough tasks to find something to switch to
+        // Note, we'll only get as many as the system currently has - up to 5
+        while ((lastAppId == 0) && (looper < tasks.size())) {
+            packageName = tasks.get(looper).topActivity.getPackageName();
+            if (!packageName.equals(defaultHomePackage) && !packageName.equals("com.android.systemui")) {
+                lastAppId = tasks.get(looper).id;
+            }
+            looper++;
+        }
+        if (lastAppId != 0) {
+            am.moveTaskToFront(lastAppId, am.MOVE_TASK_NO_USER_ACTION);
         }
     }
 

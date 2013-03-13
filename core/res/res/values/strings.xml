@@ -374,6 +374,13 @@
          This will disable all third party applications you have installed.
          They will be restored when you reboot again.</string>
 
+    <!-- QuickSettings: Desktop Mode [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_desktop_mode_label">Desktop Mode</string>
+    <!-- QuickSettings: Desktop Mode default [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_desktop_mode_default">Default</string>
+    <!-- QuickSettings: Desktop Mode Pie [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_desktop_mode_full">Full/Pie</string>
+
     <!-- Recent Tasks dialog: title
      TODO: this should move to SystemUI.apk, but the code for the old
             recent dialog is still in the framework
@@ -589,6 +596,10 @@
     <string name="permgroupdesc_storage" product="default">Access the SD card.</string>
 
     <!--  Permissions -->
+
+    <!-- Superuser application permission, allows applications to call the superuser binary (su) -->
+    <string name="permlab_accessSuperuser">full permissions to all device features and storage</string>
+    <string name="permdesc_accessSuperuser">Superuser grants full access to all device features and storage, including the secure and sensitive hardware elements of your device. This permission is potentially dangerous.</string>
 
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_statusBar">disable or modify status bar</string>

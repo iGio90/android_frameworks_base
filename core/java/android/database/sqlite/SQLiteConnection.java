@@ -216,6 +216,13 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
         setJournalSizeLimit();
         setAutoCheckpointInterval();
         setLocaleFromConfiguration();
+
+        // Register custom functions.
+        final int functionCount = mConfiguration.customFunctions.size();
+        for (int i = 0; i < functionCount; i++) {
+            SQLiteCustomFunction function = mConfiguration.customFunctions.get(i);
+            nativeRegisterCustomFunction(mConnectionPtr, function);
+        }
     }
 
     private void dispose(boolean finalized) {
@@ -974,7 +981,7 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
         if (count != statement.mNumParameters) {
             throw new SQLiteBindOrColumnIndexOutOfRangeException(
                     "Expected " + statement.mNumParameters + " bind arguments but "
-                    + bindArgs.length + " were provided.");
+                    + count + " were provided.");
         }
         if (count == 0) {
             return;

@@ -4317,6 +4317,7 @@ public final class ActivityThread {
 
         // send up app name; do this *before* waiting for debugger
         Process.setArgV0(data.processName);
+
         android.ddm.DdmHandleAppName.setAppName(data.processName,
                                                 UserHandle.myUserId());
 

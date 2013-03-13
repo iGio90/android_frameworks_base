@@ -61,6 +61,9 @@ import android.widget.LinearLayout;
 
 import java.math.BigInteger;
 
+import static com.android.internal.util.jellybam.AwesomeConstants.*;
+import com.android.systemui.aokp.NavBarHelpers;
+
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.aokp.AwesomeAction;
@@ -91,6 +94,8 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
     boolean mVertical;
     boolean mScreenOn;
 
+    private boolean isRotating = false;
+
     boolean mHidden, mLowProfile, mShowMenu;
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
@@ -99,8 +104,11 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
             mRecentsIcon, mRecentsLandIcon, mRecentsAltIcon, mRecentsAltLandIcon;
     private boolean mMenuArrowKeys;
     private boolean mColorAllIcons;
-    
+
     public DelegateViewHelper mDelegateHelper;
+    private BaseStatusBar mBar;
+    private SettingsObserver mSettingsObserver;
+    private Context mContext;
 
     private Canvas mCurrentCanvas;
     private Canvas mNewCanvas;
@@ -128,21 +136,21 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
     public final static int StockButtonsQty = 3;
     public final static String[] StockClickActions = {
-        AwesomeAction.ACTION_BACK,
-        AwesomeAction.ACTION_HOME,
-        AwesomeAction.ACTION_RECENTS,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL };
+        AwesomeConstant.ACTION_BACK.value(),
+        AwesomeConstant.ACTION_HOME.value(),
+        AwesomeConstant.ACTION_RECENTS.value(),
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value() };
     public final static String[] StockLongpress = {
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL,
-        AwesomeAction.ACTION_NULL };
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value(),
+        AwesomeConstant.ACTION_NULL.value() };
 
     FrameLayout rot0;
     FrameLayout rot90;
@@ -253,6 +261,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
     public NavigationBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        mContext = context;
         mHidden = false;
 
         mDisplay = ((WindowManager)context.getSystemService(
@@ -362,7 +371,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                     }
                     v.setTint(mColorAllIcons);
                 } else {
-                    v.setImageDrawable(AwesomeAction.getInstance(mContext).getIconImage(mClickActions[j]));
+                    v.setImageDrawable(NavBarHelpers.getIconImage(mContext, mClickActions[j]));
                     v.setTint(mClickActions[j].startsWith("**") || mColorAllIcons);
                 }
                 addButton(navButtonLayout, v, landscape && !mLeftyMode);
@@ -510,7 +519,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
         final int iconSize = 80;
         ExtensibleKeyButtonView v = null;
-        if(AwesomeAction.ACTION_RECENTS.equals(clickAction)) {
+        if(clickAction.equals(AwesomeConstant.ACTION_RECENTS)) {
             v = new RecentsKeyButtonView(mContext, null, clickAction, longpress);
         } else {
             v = new ExtensibleKeyButtonView(mContext, null, clickAction,
@@ -598,26 +607,19 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         }
 
         mNavigationIconHints = hints;
-
-        getBackButton().setAlpha(
-            (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
-        getHomeButton().setAlpha(
-            (0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
-        getRecentsButton().setAlpha(
-            (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
-
-        if(button == NavigationCallback.NAVBAR_BACK_HINT) {
+        if (getBackButton() != null) {
+            getBackButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
             ((ImageView)getBackButton()).setImageDrawable(
-                (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
+                    (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
                     ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
                     : (mVertical ? mBackLandIcon : mBackIcon));
-        } else if (button == NavigationCallback.NAVBAR_RECENTS_HINT) {
-            ((ImageView)getRecentsButton()).setImageDrawable(
-                (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_ALT))
-                    ? (mVertical ? mRecentsAltLandIcon : mRecentsAltIcon)
-                    : (mVertical ? mRecentsLandIcon : mRecentsIcon));
         }
-
+        if (getHomeButton()!=null) {
+            getHomeButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
+        }
+        if (getRecentsButton()!=null) {
+            getRecentsButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
+        }
         updateMenuArrowKeys();
     }
 
@@ -888,15 +890,13 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
         // force the low profile & disabled states into compliance
         setLowProfile(mLowProfile, false, true /* force */);
+        isRotating = true;
         setDisabledFlags(mDisabledFlags, true /* force */);
         setMenuVisibility(mShowMenu, true /* force */);
         setNavigationIconHints(mNavigationIconHints, true);
         if (DEBUG) {
             Slog.d(TAG, "reorient(): rot=" + mDisplay.getRotation());
         }
-        // Reset recents hints after reorienting
-        ((ImageView)getRecentsButton()).setImageDrawable(mVertical
-                ? mRecentsLandIcon : mRecentsIcon);
     }
 
     @Override

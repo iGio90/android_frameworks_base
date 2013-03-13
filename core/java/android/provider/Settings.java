@@ -276,6 +276,20 @@ public final class Settings {
             "android.settings.DISPLAY_SETTINGS";
 
     /**
+     * Activity Action: Show settings to allow configuration of display.
+     * <p>
+     * In some cases, a matching Activity may not exist, so ensure you
+     * safeguard against this.
+     * <p>
+     * Input: Nothing.
+     * <p>
+     * Output: Nothing.
+     */
+    @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+    public static final String ACTION_NOTIFICATION_SHORTCUTS_SETTINGS =
+            "android.settings.carbon.notificationshortcuts.NOTIFICATION_SHORTCUTS";
+
+    /**
      * Activity Action: Show settings to allow configuration of locale.
      * <p>
      * In some cases, a matching Activity may not exist, so ensure you
@@ -1133,12 +1147,13 @@ public final class Settings {
          * or not a valid integer.
          */
         public static boolean getBoolean(ContentResolver cr, String name, boolean def) {
-            String v = getString(cr, name);
+            String resolved = getString(cr, name);
             try {
-                if(v != null)
-                    return "1".equals(v);
-                else
+                if(resolved != null) {
+                    return "1".equals(resolved);
+               } else {
                     return def;
+               }
             } catch (NumberFormatException e) {
                 return def;
             }
@@ -1175,7 +1190,6 @@ public final class Settings {
          * with that name.  Note that internally setting values are always
          * stored as strings, so this function converts the given value to a
          * string (1 or 0) before storing it.
-         *
          * @param cr The ContentResolver to access.
          * @param name The name of the setting to modify.
          * @param value The new value for the setting.
@@ -1836,6 +1850,11 @@ public final class Settings {
         public static final String VOLUME_ADJUST_SOUNDS_ENABLED = "volume_adjust_sounds_enabled";
 
         /**
+         * Ability to enable/disable Daul pane prefs.
+         */
+        public static final String FORCE_DUAL_PANEL = "dual_pane_prefs";
+
+        /**
          * Determines which streams are affected by ringer mode changes. The
          * stream type's bit should be set to 1 if it should be muted when going
          * into an inaudible ringer mode.
@@ -2026,7 +2045,7 @@ public final class Settings {
          */
         public static final Uri DEFAULT_RINGTONE_URI = getUriFor(RINGTONE);
 
-        public static final Uri DEFAULT_VIBRATION_URI = Uri.parse("content://com.aokp.romcontrol.Vibrations/vibrations/0");
+        public static final Uri DEFAULT_VIBRATION_URI = Uri.parse("content://com.android.settings.jellybam.Vibrations/vibrations/0");
 
         public static final String PHONE_VIBRATION = "phone_vibration";
 
@@ -2797,17 +2816,18 @@ public final class Settings {
          */
         public static final String STATUS_ICON_COLOR = "status_icon_color";
 
+        /*
+         * On or off the Pie.
+         *
+         * @hide
+         */
+        public static final String PIE_CONTROLS = "pie_controls";
+
         /**
-         * Pie menu, should default to 0 (no, show only when needed)
+         * Pie menu, should default to 1 (yes, show)
          * @hide
          */
         public static final String PIE_MENU = "pie_menu";
-
-        /**
-         * Center Pie? Should default to 1 (yes, center)
-         * @hide
-         */
-        public static final String PIE_CENTER = "pie_center";
 
         /**
          * Pie search, should default to 1 (yes, show)
@@ -2816,7 +2836,19 @@ public final class Settings {
         public static final String PIE_SEARCH = "pie_search";
 
         /**
-         * Pie gap angle, should default to 1
+         * Pie will not rotate. Should default to 1 (yes, do not rotate)
+         * @hide
+         */
+        public static final String PIE_STICK = "pie_stick";
+
+        /**
+         * Pie last app, should default to 0 (no, show only when needed)
+         * @hide
+         */
+        public static final String PIE_LAST_APP = "pie_last_app";
+
+        /*
+         * Pie gap angle, should default to 3
          * @hide
          */
         public static final String PIE_GAP = "pie_gap";
@@ -2852,6 +2884,77 @@ public final class Settings {
          * @hide
          */
         public static final String PIE_SIZE = "pie_size";
+
+        /**
+         * Pie Notification Ability
+         * @hide
+         */
+        public static final String PIE_NOTIFICATIONS = "pie_notifications";
+
+       // PIE COLORS EVERYWHERE! //
+
+        /**
+         * @hide
+         */
+        public static final String PIE_ENABLE_COLOR = "pie_enable_color";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_JUICE = "pie_juice";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_BUTTON_COLOR = "pie_button_color";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_SNAP_BACKGROUND = "pie_snap_background";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_BACKGROUND = "pie_background";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_SELECT = "pie_select";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_OUTLINES = "pie_outlines";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_STATUS_CLOCK = "pie_status_clock";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_STATUS = "pie_status";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_CHEVRON_LEFT = "pie_chevron_left";
+
+        /**
+         * @hide
+         */
+        public static final String PIE_CHEVRON_RIGHT = "pie_chevron_right";
+
+        /**
+         * Center Pie? Should default to 1 (yes, center)
+         * @hide
+         */
+        public static final String PIE_CENTER = "pie_center";
+
+       // PIE COLORS EVERYWHERE! //
 
         /**
          * User Interface State
@@ -2934,31 +3037,86 @@ public final class Settings {
          * Quick Settings Panel Tiles to Use
          * @hide
          */
-        public static final String QUICK_SETTINGS_TILES = "quick_settings_tiles";
+        public static final String QUICK_SETTINGS = "quick_settings";
 
         /**
-         * QuickSettings panel dynamic alarm tile
+         * Quick Settings Panel Dynamic Tiles
+         *
          * @hide
          */
         public static final String QS_DYNAMIC_ALARM = "qs_dyanmic_alarm";
 
         /**
-         * QuickSettings panel dynamic bug-report tile
+         * Quick Settings Panel Dynamic Tiles
+         *
          * @hide
          */
         public static final String QS_DYNAMIC_BUGREPORT = "qs_dyanmic_bugreport";
 
         /**
-         * QuickSettings panel dynamic IME tile
+         * Quick Settings Panel Dynamic Tiles
+         *
          * @hide
          */
         public static final String QS_DYNAMIC_IME = "qs_dyanmic_ime";
 
         /**
-         * QuickSettings panel dynamic wifi tile
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_USBTETHER = "qs_dyanmic_usbtether";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
          * @hide
          */
         public static final String QS_DYNAMIC_WIFI = "qs_dyanmic_wifi";
+
+        /**
+         * Quick Settings Quick Pulldown
+         *
+         * @hide
+         */
+        public static final String QS_QUICK_PULLDOWN = "qs_quick_pulldown";
+
+        /**
+         * Quick Settings Collapse Pane
+         *
+         * @hide
+         */
+         public static final String QS_COLLAPSE_PANEL = "qs_collapse_panel";
+
+        /**
+         * Sets the portrait background of notification drawer
+         * @hide
+         */
+         public static final String NOTIFICATION_BACKGROUND = "notification_background";
+
+        /**
+         * Sets the landscape background of notification drawer
+         * @hide
+         */
+         public static final String NOTIFICATION_BACKGROUND_LANDSCAPE = "notification_background_landscape";
+
+        /**
+         * Sets the alpha (transparency) of notification wallpaper
+         * @hide
+         */
+         public static final String NOTIF_WALLPAPER_ALPHA = "notif_wallpaper_alpha";
+
+        /**
+         * Sets the alpha (transparency) of notifications
+         * @hide
+         */
+         public static final String NOTIF_ALPHA = "notif_alpha";
+
+        /**
+         * Weather to minimize lockscreen challenge on screen turned on
+         * @hide
+         */
+        public static final String LOCKSCREEN_MAXIMIZE_WIDGETS = "lockscreen_maximize_widgets";
 
         /**
          * Volume keys control cursor in text fields (default is 0)
@@ -3193,12 +3351,6 @@ public final class Settings {
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
 
         /**
-         * Sets the alpha of notification wallpaper
-         * @hide
-         */
-        public static final String NOTIF_WALLPAPER_ALPHA = "notif_wallpaper_alpha";
-
-        /**
          * Vibrate when expanding notifications
          * @hide
          */
@@ -3236,6 +3388,12 @@ public final class Settings {
         */
         public static final String TORCH_STATE = "torch_state";
 
+       /**
+        * Status Bar notification icon opacity
+        * @hide
+        */
+        public static final String STATUS_BAR_NOTIF_ICON_OPACITY = "status_bar_notif_icon_opacity";
+
         /**
          * whether to hide the kill-all-button on recent switcher
          *
@@ -3255,6 +3413,40 @@ public final class Settings {
         * @hide
         */
         public static final String NAVIGATION_BAR_LEFTY_MODE = "navigation_bar_lefty_mode";
+
+        /**
+         * Custom Spen Actions
+         *
+         * @hide
+         */
+        public static final String[] SPEN_ACTIONS = new String[] {
+                "spen_action_left",
+                "spen_action_right",
+                "spen_action_down",
+                "spen_action_up",
+                "spen_action_double",
+                "spen_action_long",
+        };
+
+        /**
+         * Setting to enable Spen actions.
+         *
+         * @hide
+         */
+        public static final String ENABLE_SPEN_ACTIONS = "enable_spen_actions";
+
+        /**
+         * Custom navring icons
+         *
+         * @hide
+         */
+        public static final String[] SYSTEMUI_NAVRING_ICON = new String[] {
+                "navring_icon_0",
+                "navring_icon_1",
+                "navring_icon_2",
+                "navring_icon_3",
+                "navring_icon_4",
+        };
 
        /**
         *
@@ -3324,6 +3516,14 @@ public final class Settings {
 
         /* What brightness to use for the notificaion LED
          *
+        /**
+         * Restart Launcher
+         * @hide
+         */
+        public static final String EXPANDED_DESKTOP_RESTART_LAUNCHER = "expanded_desktop_restart_launcher";
+
+        /**
+         * Pie menu, should default to 1 (yes, show)
          * @hide
          */
         public static final String LED_BRIGHTNESS = "led_brightness";
@@ -3381,6 +3581,12 @@ public final class Settings {
                 "notification_clock_2",
         };
 
+        /**	
+         * Circle battery, default = 0, standard android battery
+         * @hide
+         */
+        public static final String STATUS_BAR_CIRCLE_BATTERY = "status_bar_circle_battery";
+
         /**
          * Current UI Mode
          * 
@@ -3424,6 +3630,7 @@ public final class Settings {
         public static final String MENU_VISIBILITY = "menu_visibility";
 
         /**
+         * Center Pie? Should default to 1 (yes, center)
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS_QTY = "navigation_bar_buttons_qty";
@@ -3613,6 +3820,11 @@ public final class Settings {
          * @hide
          */
         public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD = "mute_annoying_notifications_threshold";
+
+        /**
+         * @hide
+         */
+        public static final String MMS_BREATH = "mms_breath";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -3974,6 +4186,44 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
+
+        /**
+         * Whether to enable notification shortcuts (toggle)
+         *
+         * @hide
+         */
+
+        public static final String NOTIFICATION_SHORTCUTS_TOGGLE = "pref_notification_shortcuts_toggle";
+
+        /**
+         * Stores the number of notification shortcuts to display settings for
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_QUANTITY = "pref_notification_shortcuts_quantity";
+
+        /**
+         * Stores values for notification shortcut targets
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_TARGETS = "notification_shortcuts_targets";
+
+        /**
+         * Stores the value for notification shortcuts icon color
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_COLOR = "notification_shortcuts_color";
+
+        /**
+         * Whether to colorize the default application icons
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_COLORIZE_TOGGLE = "notification_shortcuts_colorize_toggle";
+
+        /**
+         * Whether to colorize the default application icons
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_HIDE_CARRIER = "notification_shortcuts_hide_carrier";
 
     }
 
