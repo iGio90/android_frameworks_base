@@ -3091,6 +3091,13 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
     }
 
+         @Override
+        public void onChange(boolean selfChange) {
+            boolean uiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
+                                    Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
+            updateSettings();
+        }
+
    protected void updateSettings() {
         ContentResolver cr = mContext.getContentResolver();
 
