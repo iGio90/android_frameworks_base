@@ -183,6 +183,7 @@ public class SbBatteryController extends LinearLayout {
             case STYLE_ICON_SPEED_RB:
                  icon = mPlugged ? R.drawable.stat_sys_battery_charge_altcircle
                  : R.drawable.stat_sys_battery_altcircle;
+		 break;
             case STYLE_ICON_GEAR:
                  icon = mPlugged ? R.drawable.stat_sys_battery_gear_charge
                  : R.drawable.stat_sys_battery_gear;
