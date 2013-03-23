@@ -2818,9 +2818,14 @@ public final class Settings {
          */
         public static final String STATUS_ICON_COLOR = "status_icon_color";
 
-        /*
-         * On or off the Pie.
-         *
+        /**
+         * Foreground App
+         * @hide
+         */
+        public static final String FOREGROUND_APP = "foreground_app";
+
+        /**
+         * Restart Launcher
          * @hide
          */
         public static final String PIE_CONTROLS = "pie_controls";
