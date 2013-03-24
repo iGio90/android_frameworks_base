@@ -85,11 +85,8 @@
             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/back"
                 android:layout_width="@dimen/navigation_key_width"
                 android:layout_height="match_parent"
-<<<<<<< HEAD
                 android:src="@drawable/ic_sysbar_back"
                 android:scaleType="fitCenter"
-=======
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
                 systemui:keyCode="4"
                 android:layout_weight="0"
                 systemui:glowBackground="@drawable/ic_sysbar_highlight"
@@ -104,11 +101,8 @@
             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/home"
                 android:layout_width="@dimen/navigation_key_width"
                 android:layout_height="match_parent"
-<<<<<<< HEAD
                 android:src="@drawable/ic_sysbar_home"
                 android:scaleType="fitCenter"
-=======
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
                 systemui:keyCode="3"
                 systemui:keyRepeat="false"
                 android:layout_weight="0"
@@ -124,11 +118,8 @@
             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/recent_apps"
                 android:layout_width="@dimen/navigation_key_width"
                 android:layout_height="match_parent"
-<<<<<<< HEAD
                 android:src="@drawable/ic_sysbar_recent"
                 android:scaleType="fitCenter"
-=======
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
                 android:layout_weight="0"
                 systemui:glowBackground="@drawable/ic_sysbar_highlight"
                 android:contentDescription="@string/accessibility_recent"
@@ -269,6 +260,7 @@
             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/recent_apps"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
+                android:src="@drawable/ic_sysbar_recent_land"
                 android:layout_weight="0"
                 android:contentDescription="@string/accessibility_recent"
                 systemui:glowBackground="@drawable/ic_sysbar_highlight_land"
@@ -282,6 +274,7 @@
             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/home"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
+                android:src="@drawable/ic_sysbar_home_land"
                 systemui:keyCode="3"
                 systemui:keyRepeat="false"
                 android:layout_weight="0"
@@ -297,11 +290,7 @@
             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/back"
                 android:layout_height="80dp"
                 android:layout_width="match_parent"
-<<<<<<< HEAD
                 android:src="@drawable/ic_sysbar_back_land"
-=======
-                android:scaleType="center"
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
                 systemui:keyCode="4"
                 android:layout_weight="0"
                 android:contentDescription="@string/accessibility_back"

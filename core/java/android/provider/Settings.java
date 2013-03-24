@@ -4216,47 +4216,6 @@ public final class Settings {
         public static final String STATUSBAR_BRIGHTNESS_SLIDER = "statusbar_brightness_slider";
 
         /**
-<<<<<<< HEAD
-=======
-         * Navigation bar color.
-         *
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_COLOR = "navigation_bar_color";
-
-        /**
-         * use Alt Statusbar Signal Layout
-         * boolean
-         *
-         * @hide
-         */
-        public static final String STATUSBAR_SIGNAL_CLUSTER_ALT = "statusbar_signal_cluster_alt";
-
-        /**
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_ALPHA_CONFIG = "navigation_bar_alpha_config";
-
-        /**
-         * @hide
-         */
-        public static final String STATUS_BAR_ALPHA_CONFIG = "status_bar_alpha_config";
-
-        /**
-         * @hide
-         */
-        public static final String TOGGLES_STYLE = "toggls_style";
-
-        /**
-         * @hide
-         * Show Wifi network name in notification shade
-         * 0 - don't show
-         * 1 - show
-         */
-        public static final String NOTIFICATION_SHOW_WIFI_SSID = "notification_show_wifi_ssid";
-
-        /**
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
          * Whether to enable notification shortcuts (toggle)
          *
          * @hide

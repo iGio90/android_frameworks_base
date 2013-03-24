@@ -59,27 +59,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-<<<<<<< HEAD
 import java.math.BigInteger;
 
 import static com.android.internal.util.jellybam.AwesomeConstants.*;
 import com.android.systemui.aokp.NavBarHelpers;
 
-=======
-import static com.android.internal.util.aokp.AwesomeConstants.*;
-import com.android.internal.util.aokp.BackgroundAlphaColorDrawable;
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.internal.util.aokp.NavBarHelpers;
 import com.android.systemui.R;
-<<<<<<< HEAD
 import com.android.systemui.aokp.AwesomeAction;
 import com.android.systemui.recent.RecentsActivity.NavigationCallback;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
-=======
-import com.android.systemui.TransparencyManager;
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
 import com.android.systemui.statusbar.policy.key.RecentsKeyButtonView;
@@ -109,13 +99,9 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
     boolean mHidden, mLowProfile, mShowMenu;
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
-<<<<<<< HEAD
 
     private Drawable mBackIcon, mBackLandIcon, mBackAltIcon, mBackAltLandIcon,
             mRecentsIcon, mRecentsLandIcon, mRecentsAltIcon, mRecentsAltLandIcon;
-=======
-    private Drawable mBackIcon, mBackAltIcon;
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
     private boolean mMenuArrowKeys;
     private boolean mColorAllIcons;
 
@@ -190,6 +176,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
 
     private int mMenuVisbility;
     private int mMenuLocation;
+    private boolean mHasBigMenuButton = false;
 
     private class H extends Handler {
         public void handleMessage(Message m) {
@@ -288,7 +275,6 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         mShowMenu = false;
         mDelegateHelper = new DelegateViewHelper(this);
 
-<<<<<<< HEAD
         mBackIcon = res.getDrawable(R.drawable.ic_sysbar_back);
         mBackLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_land);
         mBackAltIcon = ((KeyButtonView)generateKey(false, KEY_BACK_ALT)).getDrawable(); //res.getDrawable(R.drawable.ic_sysbar_back_ime);
@@ -325,10 +311,6 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                         updateColor();
                     }});
         }
-=======
-        mBackIcon = NavBarHelpers.getIconImage(mContext, AwesomeConstant.ACTION_BACK.value());
-        mBackAltIcon = ((KeyButtonView)generateKey(false, KEY_BACK_ALT)).getDrawable();
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
     }
 
     private void updateColor() {
@@ -373,6 +355,7 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                     .findViewById(R.id.lights_out));
 
             // Add the Main Nav Buttons
+            mHasBigMenuButton = false;
             String iconUri = "";
             for (int j = 0; j < mNumberOfButtons; j++) {
                 ExtensibleKeyButtonView v = generateKey(landscape, mClickActions[j],
@@ -396,7 +379,10 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
                 addLightsOutButton(lightsOut, v, landscape && !mLeftyMode, false);
 
                 if (v.getId() == R.id.back){
-                	mBackIcon = v.getDrawable();
+                	mBackIcon = mBackLandIcon = v.getDrawable();
+                }
+                if (v.getId() == R.id.navbar_menu_big){
+                    mHasBigMenuButton = true;
                 }
                 if (mNumberOfButtons == 3 && j != (mNumberOfButtons - 1)) {
                     // add separator view here
@@ -621,16 +607,12 @@ public class NavigationBarView extends LinearLayout implements NavigationCallbac
         }
 
         mNavigationIconHints = hints;
-<<<<<<< HEAD
-=======
-        // We can't guarantee users will set these buttons as targets
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
         if (getBackButton() != null) {
             getBackButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
             ((ImageView)getBackButton()).setImageDrawable(
                     (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
-                    ? (mBackAltIcon)
-                    : (mBackIcon));
+                    ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
+                    : (mVertical ? mBackLandIcon : mBackIcon));
         }
         if (getHomeButton()!=null) {
             getHomeButton().setAlpha((0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);

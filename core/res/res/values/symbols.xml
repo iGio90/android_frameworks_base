@@ -1852,7 +1852,6 @@
   <java-symbol type="id" name="navbarback" />
   <java-symbol type="id" name="navbarmenu" />
 
-<<<<<<< HEAD
   <!-- From power menu -->
   <java-symbol type="array" name="shutdown_reboot_icons" />
   <java-symbol type="drawable" name="ic_lock_reboot_recovery" />
@@ -1863,32 +1862,6 @@
   <java-symbol type="string" name="global_action_expanded_desktop_off" />
   <java-symbol type="string" name="global_action_expanded_desktop_on" />
   <java-symbol type="string" name="reboot_safe_mode" />
-=======
-  <java-symbol type="bool" name="config_noDelayInATwoDP" />
-
- <!-- Navigation Ring -->
-  <java-symbol type="drawable" name="ic_navbar_blank" />
-  <java-symbol type="drawable" name="ic_navbar_blank_activated" />
-  <java-symbol type="drawable" name="ic_action_empty" />
-
-  <!-- Telephony -->
-  <java-symbol type="bool" name="config_smsSamsungCdmaAlternateMessageIDEncoding" />
-  <java-symbol type="bool" name="config_samsung_stk" />
-  <java-symbol type="array" name="config_telephony_set_audioparameters" />
-  <java-symbol type="string" name="config_legacyUmsLunFile" />
-
-  <!-- Hardware Key ReMapping -->
-  <java-symbol type="integer" name="config_deviceHardwareKeys" />
-
-  <!-- Power Menu -->
-  <java-symbol type="drawable" name="ic_lock_screenshot" />
-  <java-symbol type="string" name="global_action_screenshot" />
-  <java-symbol type="drawable" name="ic_lock_torch" />
-  <java-symbol type="string" name="global_action_torch" />
-
-  <!-- Lockscreen -->
-  <java-symbol type="bool" name="config_disableHomeUnlockSetting" />
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
 
   <!-- From lockscreen targets -->
   <java-symbol type="drawable" name="list_selector_holo_dark" />
@@ -1979,7 +1952,6 @@
   <java-symbol type="bool" name="config_wifiApStartInterface" />
   <java-symbol type="bool" name="config_wifiApFirmwareReload" />
 
-<<<<<<< HEAD
  <!-- Navigation Ring -->
   <java-symbol type="drawable" name="ic_navbar_blank" />
   <java-symbol type="drawable" name="ic_navbar_blank_activated" />
@@ -1992,32 +1964,4 @@
   <java-symbol type="drawable" name="ic_action_ring_vib_silent" />
   <java-symbol type="drawable" name="ic_action_silent" />
   <java-symbol type="drawable" name="ic_action_vib" />
-=======
-  <!--  Awesome Action -->
-  <java-symbol type="string" name="action_home"/>
-  <java-symbol type="string" name="action_back"/>
-  <java-symbol type="string" name="action_recents"/>
-  <java-symbol type="string" name="action_recents_gb"/>
-  <java-symbol type="string" name="action_search"/>
-  <java-symbol type="string" name="action_screenshot"/>
-  <java-symbol type="string" name="action_menu"/>
-  <java-symbol type="string" name="action_ime"/>
-  <java-symbol type="string" name="action_kill"/>
-  <java-symbol type="string" name="action_lastapp"/>
-  <java-symbol type="string" name="action_power"/>
-  <java-symbol type="string" name="action_notifications"/>
-  <java-symbol type="string" name="action_assist"/>
-  <java-symbol type="string" name="action_clockoptions"/>
-  <java-symbol type="string" name="action_voiceassist"/>
-  <java-symbol type="string" name="action_torch"/>
-  <java-symbol type="string" name="action_silent"/>
-  <java-symbol type="string" name="action_vib"/>
-  <java-symbol type="string" name="action_silent_vib"/>
-  <java-symbol type="string" name="action_event"/>
-  <java-symbol type="string" name="action_today"/>
-  <java-symbol type="string" name="action_alarm"/>
-  <java-symbol type="string" name="action_null"/>
-  <java-symbol type="string" name="action_app"/>
-
->>>>>>> acf7bb1... FW : Rework NavBar UI in ROMControl.
 </resources>
