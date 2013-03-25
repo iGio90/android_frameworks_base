@@ -381,7 +381,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                             com.android.internal.R.drawable.ic_action_assist_generic)) {
                 Slog.w(TAG, "Couldn't grab icon from package " + component);
             }
-            mGlowPadView.setTargetResources(storedDraw);
         }
     }
 
