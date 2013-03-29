@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
