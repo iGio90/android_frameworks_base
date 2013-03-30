@@ -20,9 +20,11 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsController;
@@ -32,7 +34,7 @@ public class RebootTile extends QuickSettingsTile {
 
     public RebootTile(Context context, LayoutInflater inflater,
             QuickSettingsContainerView container,
-            QuickSettingsController qsc) {
+            final QuickSettingsController qsc, Handler handler) {
         super(context, inflater, container, qsc);
 
         mLabel = mContext.getString(R.string.quick_settings_reboot);
