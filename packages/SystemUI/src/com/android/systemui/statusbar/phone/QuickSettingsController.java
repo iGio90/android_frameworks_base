@@ -41,7 +41,6 @@ import static com.android.internal.util.cm.QSConstants.TILE_WIFIAP;
 import static com.android.internal.util.cm.QSConstants.TILE_DESKTOPMODE;
 import static com.android.internal.util.cm.QSConstants.TILE_HYBRID;
 import static com.android.internal.util.cm.QSConstants.TILE_REBOOT;
-import static com.android.internal.util.cm.QSConstants.TILE_BAMMODDER;
 import static com.android.internal.util.cm.QSUtils.deviceSupportsBluetooth;
 import static com.android.internal.util.cm.QSUtils.deviceSupportsTelephony;
 import static com.android.internal.util.cm.QSUtils.deviceSupportsUsbTether;
@@ -89,7 +88,6 @@ import com.android.systemui.quicksettings.WifiAPTile;
 import com.android.systemui.quicksettings.DesktopModeTile;
 import com.android.systemui.quicksettings.HybridTile;
 import com.android.systemui.quicksettings.RebootTile;
-import com.android.systemui.quicksettings.BamModderTile;
 
 import com.android.systemui.statusbar.powerwidget.PowerButton;
 
@@ -203,9 +201,7 @@ public class QuickSettingsController {
             } else if (tile.equals(TILE_VOLUME)) {
                 qs = new VolumeTile(mContext, inflater, mContainerView, this, mHandler);
             } else if (tile.equals(TILE_REBOOT)) {
-                qs = new RebootTile(mContext, inflater, mContainerView, this, mHandler);
-            } else if (tile.equals(TILE_BAMMODDER)) {
-                qs = new BamModderTile(mContext, inflater, mContainerView, this, mHandler);
+                qs = new VolumeTile(mContext, inflater, mContainerView, this, mHandler);
             }
             if (qs != null) {
                 qs.setupQuickSettingsTile();
