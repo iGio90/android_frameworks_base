@@ -264,9 +264,7 @@ public class NotificationPanelView extends PanelView {
                     original.getPressure(0), original.getSize(0), original.getMetaState(),
                     original.getXPrecision(), original.getYPrecision(), original.getDeviceId(),
                     original.getEdgeFlags());
-                shouldRecycleEvent = true;
-            }
-
+                
                 // The following two lines looks better than the chunk of code above, but,
                 // nevertheless, doesn't work. The view is not pinned down, and may close,
                 // just after the gesture is finished.
@@ -276,6 +274,7 @@ public class NotificationPanelView extends PanelView {
                 shouldRecycleEvent = true;
             }
 
+        }
         final boolean result = mHandleView.dispatchTouchEvent(event);
         if (shouldRecycleEvent) {
             event.recycle();
