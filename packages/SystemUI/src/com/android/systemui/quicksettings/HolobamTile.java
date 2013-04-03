@@ -20,8 +20,6 @@ public class HolobamTile extends QuickSettingsTile {
             QuickSettingsContainerView container, QuickSettingsController qsc, Handler handler) {
         super(context, inflater, container, qsc);
 
-            mLabel = R.string.quick_settings_holobam;
-
         mOnClick = new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,8 +48,10 @@ public class HolobamTile extends QuickSettingsTile {
     private synchronized void updateTile() {
         if(getHoloBamState()){
             mDrawable = R.drawable.ic_qs_jb_dark_on;
+	    mLabel = mContext.getString(R.string.quick_settings_holobam_on);
         }else{
             mDrawable = R.drawable.ic_qs_jb_dark_off;
+            mLabel = mContext.getString(R.string.quick_settings_holobam_off);
         }
     }
 
