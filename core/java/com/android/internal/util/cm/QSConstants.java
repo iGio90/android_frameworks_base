@@ -29,6 +29,7 @@ public class QSConstants {
         public static final String TILE_VOLUME = "toggleVolume";
         public static final String TILE_HYBRID = "toggleHybrid";
         public static final String TILE_REBOOT = "toggleReboot";
+        public static final String TILE_HOLOBAM = "toggleHolobam";
 
         public static final String TILE_DELIMITER = "|";
         public static ArrayList<String> TILES_DEFAULT = new ArrayList<String>();
@@ -43,5 +44,6 @@ public class QSConstants {
             TILES_DEFAULT.add(TILE_AIRPLANE);
             TILES_DEFAULT.add(TILE_HYBRID);
             TILES_DEFAULT.add(TILE_DESKTOPMODE);
+            TILES_DEFAULT.add(TILE_HOLOBAM);
         }
 }
