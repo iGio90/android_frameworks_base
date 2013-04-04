@@ -206,8 +206,8 @@ public class QuickSettingsController {
                 qs = new RebootTile(mContext, inflater, mContainerView, this, mHandler);
             } else if (tile.equals(TILE_HOLOBAM)) {
                 qs = new HolobamTile(mContext, inflater, mContainerView, this, mHandler);
-            } else if (tile.equals(TILE_NETWORKMODE)) {
-                qs = new MobileNetworkTypeTile(mContext, inflater, mContainerView, this, mHandler);
+            } else if (tile.equals(TILE_NETWORKMODE) && telephonySupported) {
+                qs = new MobileNetworkTypeTile(mContext, inflater, mContainerView, this);
             }
             if (qs != null) {
                 qs.setupQuickSettingsTile();
