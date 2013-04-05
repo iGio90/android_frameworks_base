@@ -2455,6 +2455,11 @@ public final class Settings {
         public static final String LOCKSCREEN_DISABLED = "lockscreen.disabled";
 
         /**
+         * @hide
+         */
+        public static final String KG_CAMERA_WIDGET = "kg_camera_widget";
+
+        /**
          * Stores values for custom lockscreen targets
          * @hide
          */
