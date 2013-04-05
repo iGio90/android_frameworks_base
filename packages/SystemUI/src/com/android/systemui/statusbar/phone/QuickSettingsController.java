@@ -19,6 +19,7 @@ package com.android.systemui.statusbar.phone;
 import static com.android.internal.util.cm.QSConstants.TILES_DEFAULT;
 import static com.android.internal.util.cm.QSConstants.TILE_AIRPLANE;
 import static com.android.internal.util.cm.QSConstants.TILE_AUTOROTATE;
+import static com.android.internal.util.cm.QSConstants.TILE_BAMCONTROL;
 import static com.android.internal.util.cm.QSConstants.TILE_BATTERY;
 import static com.android.internal.util.cm.QSConstants.TILE_BLUETOOTH;
 import static com.android.internal.util.cm.QSConstants.TILE_BRIGHTNESS;
@@ -63,6 +64,7 @@ import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.quicksettings.AirplaneModeTile;
 import com.android.systemui.quicksettings.AlarmTile;
 import com.android.systemui.quicksettings.AutoRotateTile;
+import com.android.systemui.quicksettings.BamcontrolTile;
 import com.android.systemui.quicksettings.BatteryTile;
 import com.android.systemui.quicksettings.BluetoothTile;
 import com.android.systemui.quicksettings.BrightnessTile;
@@ -208,6 +210,8 @@ public class QuickSettingsController {
                 qs = new HolobamTile(mContext, inflater, mContainerView, this, mHandler);
             } else if (tile.equals(TILE_NETWORKMODE) && telephonySupported) {
                 qs = new MobileNetworkTypeTile(mContext, inflater, mContainerView, this);
+            } else if (tile.equals(TILE_BAMCONTROL)) {
+                qs = new BamcontrolTile(mContext, inflater, mContainerView, this);
             }
             if (qs != null) {
                 qs.setupQuickSettingsTile();
