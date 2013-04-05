@@ -44,7 +44,7 @@ public class BamcontrolTile extends QuickSettingsTile{
     }
 
     private synchronized void updateTile() {
-        mDrawable = R.drawable.ic_qs_settings;
+        mDrawable = R.drawable.ic_qs_jb_bamcontrol;
         mLabel = mContext.getString(R.string.quick_settings_bamcontrol_label);
     }
 }
