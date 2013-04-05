@@ -1992,4 +1992,8 @@
 
   <!-- IME Picker showing upon pressing Sym Key -->
   <java-symbol type="bool" name="config_symKeyShowsImePicker" />
+
+  <!-- Device specific handlers -->
+  <java-symbol type="string" name="config_deviceHandlersLib" />
+  <java-symbol type="string" name="config_deviceDockBatteryHandlerClass" />
 </resources>
