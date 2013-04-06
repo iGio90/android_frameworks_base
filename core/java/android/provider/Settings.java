@@ -3650,12 +3650,6 @@ public final class Settings {
                 "notification_clock_2",
         };
 
-        /**	
-         * Circle battery, default = 0, standard android battery
-         * @hide
-         */
-        public static final String STATUS_BAR_CIRCLE_BATTERY = "status_bar_circle_battery";
-
         /**
          * Current UI Mode
          * 
