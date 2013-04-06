@@ -181,7 +181,7 @@
                 android:textAppearance="@style/TextAppearance.StatusBar.Battery"
                 android:singleLine="true"
                 android:gravity="bottom"
-                android:paddingLeft="2dip"
+                android:paddingLeft="4dip"
             />
         </LinearLayout>
     </com.android.systemui.statusbar.tablet.NotificationArea>
