@@ -3067,38 +3067,9 @@ public class PhoneStatusBar extends BaseStatusBar {
             cr.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NOTIF_WALLPAPER_ALPHA),
                     false, this);
-        }
-    }
-
-    /**
-     * ContentObserver to watch for Notification background/alpha
-     * @author dvtonder
-     * @author kufikugel
-     */
-    private class NotifChangedObserver extends ContentObserver {
-        public NotifChangedObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            setNotificationWallpaperHelper();
-            setNotificationAlphaHelper();
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
 
             cr.registerContentObserver(
-                    Settings.Secure.getUriFor(Settings.Secure.UI_MODE_IS_TOGGLED),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NOTIF_WALLPAPER_ALPHA),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NOTIF_ALPHA),
+                    Settings.System.getUriFor(Settings.System.QUICK_TILES_TEXT_COLOR),
                     false, this);
         }
     }
