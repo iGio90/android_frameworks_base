@@ -41,13 +41,6 @@
             systemui:showAlways="true"
             />
 
-        <com.android.systemui.statusbar.policy.ClockCenter
-            android:textAppearance="@style/TextAppearance.SystemBar.Expanded.Clock"
-            android:id="@+id/center_clock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true" />
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
