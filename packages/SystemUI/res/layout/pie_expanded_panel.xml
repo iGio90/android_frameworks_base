@@ -23,7 +23,7 @@
     android:orientation="vertical"
     android:gravity="center_vertical">
 
-        <RelativeLayout
+	<RelativeLayout	
             android:id="@+id/content_header"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
@@ -68,7 +68,7 @@
                 android:src="@drawable/ic_notify_clear_normal"
                 android:contentDescription="@string/accessibility_clear_all"/>
 
-        </RelativeLayout>
+        </RelativeLayout>            
 
         <ScrollView
             android:id="@+id/content_scroll"
