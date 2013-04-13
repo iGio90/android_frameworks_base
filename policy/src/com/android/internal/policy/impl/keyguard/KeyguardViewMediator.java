@@ -24,7 +24,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Profile;
 import android.app.ProfileManager;
-import android.app.SearchManager;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -168,9 +167,6 @@ public class KeyguardViewMediator {
 
     /** UserManager for querying number of users */
     private UserManager mUserManager;
-
-    /** SearchManager for determining whether or not search assistant is available */
-    private SearchManager mSearchManager;
 
     /**
      * Used to keep the device awake while to ensure the keyguard finishes opening before
@@ -536,7 +532,6 @@ public class KeyguardViewMediator {
      * Let us know that the system is ready after startup.
      */
     public void onSystemReady() {
-        mSearchManager = (SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE);
         synchronized (this) {
             if (DEBUG) Log.d(TAG, "onSystemReady");
             mSystemReady = true;
@@ -1356,9 +1351,6 @@ public class KeyguardViewMediator {
                     // showing secure lockscreen; disable ticker.
                     flags |= StatusBarManager.DISABLE_NOTIFICATION_TICKER;
                 }
-                if (!isAssistantAvailable()) {
-                    flags |= StatusBarManager.DISABLE_SEARCH;
-                }
             }
 
             if (DEBUG) {
@@ -1456,8 +1448,4 @@ public class KeyguardViewMediator {
         mKeyguardViewManager.showAssistant();
     }
 
-    private boolean isAssistantAvailable() {
-        return mSearchManager != null
-                && mSearchManager.getAssistIntent(mContext, UserHandle.USER_CURRENT) != null;
-    }
 }

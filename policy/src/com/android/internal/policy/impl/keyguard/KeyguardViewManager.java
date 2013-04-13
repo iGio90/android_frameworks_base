@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
- * This code has been modified. Portions copyright (C) 2012, ParanoidAndroid Project.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,32 +18,30 @@ package com.android.internal.policy.impl.keyguard;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.KeyguardManager;
 import android.appwidget.AppWidgetManager;
-import android.database.ContentObserver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.PixelFormat;
-import android.media.AudioManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.PixelFormat;
+import android.media.AudioManager;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.provider.Settings;
-import android.util.ColorUtils;
-import android.util.ExtendedPropertiesUtils;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
@@ -96,40 +93,11 @@ public class KeyguardViewManager {
     private boolean mScreenOn = false;
     private LockPatternUtils mLockPatternUtils;
 
-    private String[] currentColors = new String[ExtendedPropertiesUtils.PARANOID_COLORS_COUNT];
-    private String[] stockColors = new String[ExtendedPropertiesUtils.PARANOID_COLORS_COUNT];
-
     private boolean mUnlockKeyDown = false;
 
     public interface ShowListener {
         void onShown(IBinder windowToken);
     };
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.LOCKSCREEN_SEE_THROUGH), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.LOCKSCREEN_BACKGROUND_VALUE), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            setKeyguardParams();
-            // Update view if it has been shown atleast once, otherwise we'll
-            // load our LayoutParams when attaching the view.
-            if(mViewManager != null && mKeyguardHost != null) {
-                mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
-            }
-            if (mKeyguardHost != null) mViewManager.removeView(mKeyguardHost);
-                mKeyguardHost = null;
-        }
-    }
 
     /**
      * @param context Used to create views.
@@ -147,32 +115,6 @@ public class KeyguardViewManager {
 
         SettingsObserver observer = new SettingsObserver(new Handler());
         observer.observe();
-
-        grabStockColors(false);
-    }
-
-    private void grabStockColors(boolean refresh) {
-        if (refresh) {
-            ExtendedPropertiesUtils.refreshProperties();
-        }
-        String[] colors = ExtendedPropertiesUtils.getProperty("android.colors").
-                split(ExtendedPropertiesUtils.PARANOID_STRING_DELIMITER);
-        for(int i=0; i < ExtendedPropertiesUtils.PARANOID_COLORS_COUNT; i++) {
-            stockColors[i] = colors.length == ExtendedPropertiesUtils.PARANOID_COLORS_COUNT ?
-                    colors[i].toUpperCase() : "NULL";
-        }
-    }
-
-    private void fadeColors(int speed, boolean lockColors) {
-        if (ColorUtils.getPerAppColorState(mContext)) {
-            for (int i = 0; i < ExtendedPropertiesUtils.PARANOID_COLORS_COUNT; i++) {
-                String color = ExtendedPropertiesUtils.mGlobalHook.colors[i];
-                String setting = ExtendedPropertiesUtils.PARANOID_COLORS_SETTINGS[i];
-                ColorUtils.ColorSettingInfo colorInfo = ColorUtils.getColorSettingInfo(mContext, setting);
-                ColorUtils.setColor(mContext, setting, colorInfo.systemColorString,
-                        (lockColors ? stockColors[i] : currentColors[i]), 1, speed);
-            }
-        }
     }
 
     /**
@@ -180,15 +122,6 @@ public class KeyguardViewManager {
      * lazily.
      */
     public synchronized void show(Bundle options) {
-        // Grab current colors
-        for (int i = 0; i < ExtendedPropertiesUtils.PARANOID_COLORS_COUNT; i++) {
-            currentColors[i] = ColorUtils.getColorSettingInfo(mContext,
-                    ExtendedPropertiesUtils.PARANOID_COLORS_SETTINGS[i]).lastColorString;
-        }
-
-        // Fade to system
-        fadeColors(0, true);
-
         if (DEBUG) Log.d(TAG, "show(); mKeyguardView==" + mKeyguardView);
 
         boolean enableScreenRotation = shouldEnableScreenRotation();
@@ -210,48 +143,14 @@ public class KeyguardViewManager {
         mKeyguardView.requestFocus();
     }
 
-    public void setKeyguardParams() {
-        final boolean isActivity = (mContext instanceof Activity); // for test activity
-        boolean allowSeeThrough = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.LOCKSCREEN_SEE_THROUGH, 0) != 0;
-
-        int flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
-                | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-
-        if (!allowSeeThrough) {
-            flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
-        }
-        if (!mNeedsInput) {
-            flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
-        }
-
-        final int stretch = ViewGroup.LayoutParams.MATCH_PARENT;
-        final int type = isActivity ? WindowManager.LayoutParams.TYPE_APPLICATION
-                : WindowManager.LayoutParams.TYPE_KEYGUARD;
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                stretch, stretch, type, flags, PixelFormat.TRANSLUCENT);
-        lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
-        lp.windowAnimations = com.android.internal.R.style.Animation_LockScreen;
-        lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-        lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_FORCE_HARDWARE_ACCELERATED;
-        lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SET_NEEDS_MENU_KEY;
-        if (isActivity) {
-            lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SHOW_FOR_ALL_USERS;
-        }
-        lp.inputFeatures |= WindowManager.LayoutParams.INPUT_FEATURE_DISABLE_USER_ACTIVITY;
-        lp.setTitle(isActivity ? "KeyguardMock" : "Keyguard");
-        mWindowLayoutParams = lp;
-    }
-
     private boolean shouldEnableScreenRotation() {
         Resources res = mContext.getResources();
+        int defaultValue = res.getBoolean(com.android.internal.R.bool.config_enableLockScreenRotation) ? 1 : 0;
         return SystemProperties.getBoolean("lockscreen.rot_override",false)
-                || Settings.System.getBoolean(
+                || Settings.System.getInt(
                         mContext.getContentResolver(),
                         Settings.System.LOCKSCREEN_AUTO_ROTATE,
-                        mContext.getResources().getBoolean(com.android.internal.R.bool.config_enableLockScreenRotation));
+                        defaultValue) == 1;
     }
 
     class ViewManagerHost extends FrameLayout {
@@ -269,19 +168,12 @@ public class KeyguardViewManager {
         @Override
         protected void onConfigurationChanged(Configuration newConfig) {
             super.onConfigurationChanged(newConfig);
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (KeyguardViewManager.this) {
-                        if (mKeyguardHost.getVisibility() == View.VISIBLE) {
-                            // only propagate configuration messages if we're currently showing
-                            maybeCreateKeyguardLocked(shouldEnableScreenRotation(), true, null);
-                        } else {
-                            if (DEBUG) Log.v(TAG, "onConfigurationChanged: view not visible");
-                        }
-                    }
-                }
-            });
+            if (mKeyguardHost.getVisibility() == View.VISIBLE) {
+                // only propagate configuration messages if we're currently showing
+                maybeCreateKeyguardLocked(shouldEnableScreenRotation(), true, null);
+            } else {
+                if (DEBUG) Log.v(TAG, "onConfigurationChanged: view not visible");
+            }
         }
 
         @Override
@@ -350,20 +242,23 @@ public class KeyguardViewManager {
                     if (mKeyguardView.handleBackKey()) {
                         return true;
                     }
+                    break;
                 case KeyEvent.KEYCODE_HOME:
                     if (mKeyguardView.handleHomeKey()) {
                         return true;
                     }
+                    break;
                 case KeyEvent.KEYCODE_MENU:
                     if (mKeyguardView.handleMenuKey()) {
                         return true;
                     }
+                    break;
             }
         }
         return false;
     }
 
-    private static boolean runAction(Context context, String uri) {
+    private boolean runAction(Context context, String uri) {
         if ("FLASHLIGHT".equals(uri)) {
             context.sendBroadcast(new Intent("net.cactii.flash2.TOGGLE_FLASHLIGHT"));
             return true;
@@ -378,6 +273,23 @@ public class KeyguardViewManager {
             return true;
         } else if ("SOUND".equals(uri)) {
             toggleSilentMode(context);
+            return true;
+        } else if ("CAMERA".equals(uri)) {
+            KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+            if (km.isKeyguardSecure()) {
+                mContext.startActivity(new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE).setFlags(
+                        Intent.FLAG_ACTIVITY_NEW_TASK|
+                        Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS|
+                        Intent.FLAG_ACTIVITY_NO_HISTORY));
+            }
+            else {
+                dismiss();
+                mContext.sendBroadcast(new Intent(Intent.ACTION_CAMERA_BUTTON, null));
+            }
+            return true;
+        } else if ("POWER".equals(uri)) {
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            pm.goToSleep(SystemClock.uptimeMillis());
             return true;
         }
 
@@ -435,6 +347,8 @@ public class KeyguardViewManager {
 
     private void maybeCreateKeyguardLocked(boolean enableScreenRotation, boolean force,
             Bundle options) {
+        final boolean isActivity = (mContext instanceof Activity); // for test activity
+
         if (mKeyguardHost != null) {
             mKeyguardHost.saveHierarchyState(mStateContainer);
         }
@@ -452,15 +366,35 @@ public class KeyguardViewManager {
                 flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                         | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
                         | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
-                        | WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+                        | WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER
+                        | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
             } else {
                 flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                         | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
                         | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
             }
 
-            setKeyguardParams();
-            mViewManager.addView(mKeyguardHost, mWindowLayoutParams);
+            if (!mNeedsInput) {
+                flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
+            }
+
+            final int stretch = ViewGroup.LayoutParams.MATCH_PARENT;
+            final int type = isActivity ? WindowManager.LayoutParams.TYPE_APPLICATION
+                    : WindowManager.LayoutParams.TYPE_KEYGUARD;
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                    stretch, stretch, type, flags, PixelFormat.TRANSLUCENT);
+            lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+            lp.windowAnimations = com.android.internal.R.style.Animation_LockScreen;
+            lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+            lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_FORCE_HARDWARE_ACCELERATED;
+            lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SET_NEEDS_MENU_KEY;
+            if (isActivity) {
+                lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SHOW_FOR_ALL_USERS;
+            }
+            lp.inputFeatures |= WindowManager.LayoutParams.INPUT_FEATURE_DISABLE_USER_ACTIVITY;
+            lp.setTitle(isActivity ? "KeyguardMock" : "Keyguard");
+            mWindowLayoutParams = lp;
+            mViewManager.addView(mKeyguardHost, lp);
         }
 
         if (force || mKeyguardView == null) {
@@ -677,9 +611,6 @@ public class KeyguardViewManager {
      * Hides the keyguard view
      */
     public synchronized void hide() {
-        // Fade to current colors        
-        fadeColors(800, false);
-
         if (DEBUG) Log.d(TAG, "hide()");
 
         if (mKeyguardHost != null) {
@@ -706,8 +637,6 @@ public class KeyguardViewManager {
                 }, 500);
             }
         }
-        // fetch current colors
-        grabStockColors(false);
     }
 
     /**
@@ -731,4 +660,27 @@ public class KeyguardViewManager {
             mKeyguardView.showAssistant();
         }
     }
+
+    /**
+     * observe transparency settings for wallpaper
+     */
+
+    class SettingsObserver extends ContentObserver {
+            SettingsObserver(Handler handler) {
+              super(handler);
+            }
+
+            void observe() {
+                 ContentResolver resolver = mContext.getContentResolver();
+                      resolver.registerContentObserver(Settings.System.getUriFor(
+                      Settings.System.LOCKSCREEN_BACKGROUND_VALUE), false, this);
+            }
+
+            @Override
+            public void onChange(boolean selfChange, Uri uri) {
+                if (mKeyguardHost != null) mViewManager.removeView(mKeyguardHost);
+                mKeyguardHost = null;
+            }
+    }
+
 }
