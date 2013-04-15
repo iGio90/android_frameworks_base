@@ -1124,9 +1124,6 @@
     <!-- True if the Sym key should open the InputMethodPicker (default) -->
     <bool name="config_symKeyShowsImePicker">true</bool>
 
-    <!-- True if the Sym key should open the InputMethodPicker (default) -->
-    <bool name="config_symKeyShowsImePicker">true</bool>
-
     <!-- Package name for default keyguard appwidget [DO NOT TRANSLATE] -->
     <string name="widget_default_package_name">com.cyanogenmod.lockclock</string>
 
