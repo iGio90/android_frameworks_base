@@ -55,6 +55,7 @@ public class StatusBarIconView extends AnimatedImageView {
     private String mNumberText;
     private Notification mNotification;
     private boolean mShowNotificationCount;
+    private SettingsObserver mObserver;
 
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
@@ -73,8 +74,7 @@ public class StatusBarIconView extends AnimatedImageView {
                 Settings.System.STATUSBAR_NOTIF_COUNT, 0) == 1;
         setContentDescription(notification);
 
-        SettingsObserver observer = new SettingsObserver(new Handler());
-        observer.observe();
+        mObserver = new SettingsObserver(new Handler());
 
         // We do not resize and scale system icons (on the right), only notification icons (on the
         // left).
@@ -233,6 +233,24 @@ public class StatusBarIconView extends AnimatedImageView {
         super.onSizeChanged(w, h, oldw, oldh);
         if (mNumberBackground != null) {
             placeNumber();
+        }
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (mObserver != null) {
+            mObserver.observe();
+        }
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (mObserver != null) {
+            mObserver.unobserve();
         }
     }
 
