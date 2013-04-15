@@ -12,6 +12,8 @@ import android.view.View.OnLongClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import static com.android.internal.util.cm.QSUtils.deviceSupportsMobileData;
+
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsController;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
@@ -100,7 +102,7 @@ public class MobileNetworkTile extends QuickSettingsTile implements NetworkSigna
             int mobileSignalIconId, String mobileSignalContentDescriptionId,
             int dataTypeIconId, String dataTypeContentDescriptionId,
             String description) {
-        if (deviceSupportsTelephony()) {
+        if (deviceSupportsMobileData(mContext)) {
             // TODO: If view is in awaiting state, disable
             Resources r = mContext.getResources();
             mDrawable = enabled && (mobileSignalIconId > 0)
@@ -128,11 +130,6 @@ public class MobileNetworkTile extends QuickSettingsTile implements NetworkSigna
 
     @Override
     public void onAirplaneModeChanged(boolean enabled) {
-    }
-
-    boolean deviceSupportsTelephony() {
-        PackageManager pm = mContext.getPackageManager();
-        return pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
     }
 
     @Override
