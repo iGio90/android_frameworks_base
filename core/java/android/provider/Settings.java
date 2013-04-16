@@ -2984,6 +2984,13 @@ public final class Settings {
         public static final String PIE_BUTTON_COLOR = "pie_button_color";
 
         /**
+         * Select Classic Recents menu style [GB-]
+         * @hide
+         */
+        public static final String CLASSIC_RECENTS_MENU = "classic_recents_menu";
+
+         /**
+         * Whether Status Bar is currently hidden or not
          * @hide
          */
         public static final String PIE_SNAP_BACKGROUND = "pie_snap_background";
