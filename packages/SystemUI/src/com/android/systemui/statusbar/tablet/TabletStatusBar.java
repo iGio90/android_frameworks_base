@@ -100,6 +100,8 @@ import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 import com.android.systemui.statusbar.policy.Prefs;
 
+import com.android.systemui.statusbar.NavigationBarView;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -164,6 +166,8 @@ public class TabletStatusBar extends BaseStatusBar implements
     View mMenuButton;
     View mRecentButton;
     private boolean mAltBackButtonEnabledForIme;
+
+    NavigationBarView mNavBarView;
 
     ViewGroup mFeedbackIconArea; // notification icons, IME icon, compat icon
     InputMethodButton mInputMethodSwitchButton;
@@ -290,7 +294,7 @@ public class TabletStatusBar extends BaseStatusBar implements
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                     | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
                     | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
-                PixelFormat.TRANSLUCENT);
+                PixelFormat.TRANSPARENT);
 
         if (ActivityManager.isHighEndGfx()) {
             lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
@@ -641,6 +645,10 @@ public class TabletStatusBar extends BaseStatusBar implements
         // The navigation buttons
         mBackButton = (ImageView)sb.findViewById(R.id.back);
         mNavigationArea = (ViewGroup) sb.findViewById(R.id.navigationArea);
+        mNavBarView = (NavigationBarView) sb.findViewById(R.id.navigationBar);
+        mNavBarView.setDisabledFlags(mDisabled);
+        mNavBarView.setBar(this);
+        mNavBarView.getSearchLight().setOnTouchListener(mHomeSearchActionListener);
         mHomeButton = mNavigationArea.findViewById(R.id.home);
         mMenuButton = mNavigationArea.findViewById(R.id.menu);
         mRecentButton = mNavigationArea.findViewById(R.id.recent_apps);
@@ -769,6 +777,9 @@ public class TabletStatusBar extends BaseStatusBar implements
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         context.registerReceiver(mBroadcastReceiver, filter);
 
+        mNavBarView.setTransparencyManager(mTransparencyManager);
+        mTransparencyManager.setNavbar(mNavBarView);
+        mTransparencyManager.update();
         return sb;
     }
 
@@ -1113,6 +1124,7 @@ public class TabletStatusBar extends BaseStatusBar implements
                 mHandler.sendEmptyMessage(MSG_CLOSE_RECENTS_PANEL);
             }
         }
+        mTransparencyManager.update();
     }
 
     private void setNavigationVisibility(int visibility) {
@@ -1290,6 +1302,7 @@ public class TabletStatusBar extends BaseStatusBar implements
     }
 
     public void topAppWindowChanged(boolean showMenu) {
+        mTransparencyManager.update();
         if (mPieControlPanel != null)
             mPieControlPanel.setMenu(showMenu);
 

@@ -16,17 +16,38 @@
 
 package com.android.systemui.statusbar.phone;
 
+import java.util.List;
+
 import android.app.ActivityManager;
+import android.app.KeyguardManager;
 import android.app.StatusBarManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.database.ContentObserver;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.os.Broadcaster;
+import android.os.Handler;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Slog;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+
 import com.android.systemui.R;
+import com.android.internal.util.jellybam.BackgroundAlphaColorDrawable;
+import com.android.systemui.statusbar.NavigationBarView;
 
 public class PhoneStatusBarView extends PanelBar {
     private static final String TAG = "PhoneStatusBarView";
@@ -55,6 +76,7 @@ public class PhoneStatusBarView extends PanelBar {
             mSettingsPanelDragzoneFrac = 0f;
         }
         mFullWidthNotifications = mSettingsPanelDragzoneFrac <= 0f;
+        setBackground(new BackgroundAlphaColorDrawable(Color.BLACK));
     }
 
     public void setBar(PhoneStatusBar bar) {
@@ -88,7 +110,7 @@ public class PhoneStatusBarView extends PanelBar {
         super.onDetachedFromWindow();
         mBar.onBarViewDetached();
     }
- 
+
     @Override
     public boolean panelsEnabled() {
         return ((mBar.mDisabled & StatusBarManager.DISABLE_EXPAND) == 0);
@@ -228,6 +250,7 @@ public class PhoneStatusBarView extends PanelBar {
             panel.setAlpha(alpha);
         }
         updateShortcutsVisibility();
+        updateBackgroundAlpha(frac);
     }
 
     public void updateShortcutsVisibility() {
@@ -251,4 +274,14 @@ public class PhoneStatusBarView extends PanelBar {
         }
         mBar.updateCarrierLabelVisibility(false);
     }
+
+    private void updateBackgroundAlpha(float ex) {
+        if(mFadingPanel != null || ex > 0) {
+            mBar.mTransparencyManager.setTempDisableStatusbarState(true);
+        } else {
+            mBar.mTransparencyManager.setTempDisableStatusbarState(false);
+        }
+        mBar.mTransparencyManager.update();
+    }
+
 }
