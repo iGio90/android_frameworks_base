@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
+import com.android.systemui.jellybam.Helpers;
+
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsController;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
@@ -25,6 +27,8 @@ public class HolobamTile extends QuickSettingsTile {
             public void onClick(View v) {
 		Settings.Secure.putInt(mContext.getContentResolver(),
                         Settings.Secure.UI_INVERTED_MODE, !getHoloBamState() ? 1 : 0);
+	        Helpers.restartSystemUI();
+	        Helpers.restartTrebuchet();
             }
         };
 
