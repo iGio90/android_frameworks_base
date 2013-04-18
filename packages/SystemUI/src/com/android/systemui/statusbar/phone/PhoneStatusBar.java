@@ -3014,14 +3014,13 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         @Override
         public void onChange(boolean selfChange) {
+            boolean hideSettingsPanel = Settings.System.getInt(mContext.getContentResolver(),
+                                    Settings.System.QS_DISABLE_PANEL, 0) == 1;
             boolean uiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
                                     Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
-            if (uiModeIsToggled != mUiModeIsToggled) {
-                recreateStatusBar();
-            }
-	    boolean hideSettingsPanel = Settings.System.getInt(mContext.getContentResolver(),
-                                    Settings.System.QS_DISABLE_PANEL, 0) == 1;
-            if (hideSettingsPanel != mHideSettingsPanel) {
+
+            if (hideSettingsPanel != mHideSettingsPanel
+                || uiModeIsToggled != mUiModeIsToggled) {
                 recreateStatusBar();
             }
 
