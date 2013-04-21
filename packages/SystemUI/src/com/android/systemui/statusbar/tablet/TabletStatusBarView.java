@@ -21,11 +21,7 @@ import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.DelegateViewHelper;
 
-import com.android.internal.util.jellybam.BackgroundAlphaColorDrawable;
-
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Slog;
@@ -48,12 +44,6 @@ public class TabletStatusBarView extends FrameLayout {
 
     public TabletStatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        Drawable bg = mContext.getResources().getDrawable(R.drawable.system_bar_background);
-        if(bg instanceof ColorDrawable) {
-            setBackground(new BackgroundAlphaColorDrawable(((ColorDrawable) bg).getColor()));
-        }
-
         mDelegateHelper = new DelegateViewHelper(this);
     }
 
