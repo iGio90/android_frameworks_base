@@ -31,6 +31,7 @@ public class QSConstants {
         public static final String TILE_REBOOT = "toggleReboot";
         public static final String TILE_HOLOBAM = "toggleHolobam";
         public static final String TILE_BAMCONTROL = "toggleBamcontrol";
+        public static final String TILE_MUSIC = "toggleMusic";
 
         public static final String TILE_DELIMITER = "|";
         public static ArrayList<String> TILES_DEFAULT = new ArrayList<String>();

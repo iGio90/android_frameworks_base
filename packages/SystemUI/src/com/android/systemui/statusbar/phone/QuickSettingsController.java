@@ -27,6 +27,7 @@ import static com.android.internal.util.cm.QSConstants.TILE_DELIMITER;
 import static com.android.internal.util.cm.QSConstants.TILE_GPS;
 import static com.android.internal.util.cm.QSConstants.TILE_HOLOBAM;
 import static com.android.internal.util.cm.QSConstants.TILE_LOCKSCREEN;
+import static com.android.internal.util.cm.QSConstants.TILE_MUSIC;
 import static com.android.internal.util.cm.QSConstants.TILE_MOBILEDATA;
 import static com.android.internal.util.cm.QSConstants.TILE_NETWORKMODE;
 import static com.android.internal.util.cm.QSConstants.TILE_NFC;
@@ -75,6 +76,7 @@ import com.android.systemui.quicksettings.InputMethodTile;
 import com.android.systemui.quicksettings.MobileNetworkTile;
 import com.android.systemui.quicksettings.MobileNetworkTypeTile;
 import com.android.systemui.quicksettings.NfcTile;
+import com.android.systemui.quicksettings.MusicTile;
 import com.android.systemui.quicksettings.PreferencesTile;
 import com.android.systemui.quicksettings.QuickSettingsTile;
 import com.android.systemui.quicksettings.RingerModeTile;
@@ -212,6 +214,8 @@ public class QuickSettingsController {
                 qs = new MobileNetworkTypeTile(mContext, inflater, mContainerView, this);
             } else if (tile.equals(TILE_BAMCONTROL)) {
                 qs = new BamcontrolTile(mContext, inflater, mContainerView, this);
+            } else if (tile.equals(TILE_MUSIC)) {
+                qs = new MusicTile(mContext, inflater, mContainerView, this);
             }
             if (qs != null) {
                 qs.setupQuickSettingsTile();
