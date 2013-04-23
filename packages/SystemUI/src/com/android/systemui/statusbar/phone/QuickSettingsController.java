@@ -215,7 +215,7 @@ public class QuickSettingsController {
             } else if (tile.equals(TILE_BAMCONTROL)) {
                 qs = new BamcontrolTile(mContext, inflater, mContainerView, this);
             } else if (tile.equals(TILE_MUSIC)) {
-                qs = new MusicTile(mContext, inflater, mContainerView, this);
+                qs = new MusicTile(mContext, inflater, mContainerView, this, mHandler);
             }
             if (qs != null) {
                 qs.setupQuickSettingsTile();
