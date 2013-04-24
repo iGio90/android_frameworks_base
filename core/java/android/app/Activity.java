@@ -5068,6 +5068,7 @@ public class Activity extends ContextThemeWrapper
             CharSequence title, Activity parent, String id,
             NonConfigurationInstances lastNonConfigurationInstances,
             Configuration config) {
+
         attachBaseContext(context);
 
         mFragments.attachActivity(this, mContainer, null);

@@ -1937,6 +1937,7 @@ final class ActivityStack {
                     doShow = topRunningNonDelayedActivityLocked(null) == r;
                 }
             }
+
             if (SHOW_APP_STARTING_PREVIEW && doShow) {
                 // Figure out if we are transitioning from another activity that is
                 // "has the same starting icon" as the next one.  This allows the
@@ -1950,6 +1951,7 @@ final class ActivityStack {
                     // (2) The current activity is already displayed.
                     else if (prev.nowVisible) prev = null;
                 }
+
                 mService.mWindowManager.setAppStartingWindow(
                         r.appToken, r.packageName, r.theme,
                         mService.compatibilityInfoForPackageLocked(
@@ -2508,12 +2510,13 @@ final class ActivityStack {
 
         mPm.cpuBoost(1500000);
 
+        // This is where we hook special purpose flags formultiwindow application
         if (intent != null) {
             final String intentExtra = intent.getStringExtra("Theme.DeviceDefault.Floating");
             final boolean floatingDialog = (intentExtra != null ? intentExtra.equals("1") : false);
             if (floatingDialog) {
-                // Do not allow tasks on home for floating multiwindows!
                 intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY|Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             }
         }
 
