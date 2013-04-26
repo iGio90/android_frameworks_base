@@ -22,6 +22,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import com.android.internal.app.HeavyWeightSwitcherActivity;
 import com.android.internal.os.BatteryStatsImpl;
+import com.android.server.AttributeCache;
 import com.android.server.am.ActivityManagerService.PendingActivityLaunch;
 import com.android.server.power.PowerManagerService;
 
@@ -64,6 +65,7 @@ import android.util.EventLog;
 import android.util.ExtendedPropertiesUtils;
 import android.util.Log;
 import android.util.Slog;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.WindowManagerPolicy;
 import com.android.internal.app.ActivityTrigger;
@@ -1938,7 +1940,7 @@ final class ActivityStack {
                 }
             }
 
-            if (SHOW_APP_STARTING_PREVIEW && doShow) {
+            if (SHOW_APP_STARTING_PREVIEW && doShow && !r.multiWindow) {
                 // Figure out if we are transitioning from another activity that is
                 // "has the same starting icon" as the next one.  This allows the
                 // window manager to keep the previous window it had previously
@@ -1951,7 +1953,7 @@ final class ActivityStack {
                     // (2) The current activity is already displayed.
                     else if (prev.nowVisible) prev = null;
                 }
-
+                
                 mService.mWindowManager.setAppStartingWindow(
                         r.appToken, r.packageName, r.theme,
                         mService.compatibilityInfoForPackageLocked(
@@ -2500,39 +2502,6 @@ final class ActivityStack {
         return newTop;
     }
 
-   int updateFlags(Intent intent) {
-        boolean topIntent = true;       
-
-        // If the current intent is not a new task we will check its top parent.
-        // Perhaps it started out as a multiwindow in which case we pass the flag on
-        final boolean newTask = (intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) == Intent.FLAG_ACTIVITY_NEW_TASK;
-        if (!newTask) {
-            ActivityRecord r = mHistory.size() > 0 ? mHistory.get(mHistory.size() -1) : null;
-            if (r != null && (r.intent.getFlags() & Intent.FLAG_MULTI_WINDOW) == Intent.FLAG_MULTI_WINDOW) {
-                intent.addFlags(Intent.FLAG_MULTI_WINDOW);
-                // Flag the activity as a sub-task
-                topIntent = false;
-            }
-        }
-
-        // If this is a multiwindow activity we prevent it from messing up the history stack,
-        // like jumping back home, killing the current activity or polluting recents
-        final boolean multiWindow = (intent.getFlags() & Intent.FLAG_MULTI_WINDOW) == Intent.FLAG_MULTI_WINDOW;
-        if (multiWindow) {
-            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_TASK_ON_HOME);
-            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_USER_ACTION);
-
-            // If this is the mother-intent we make it volatile
-            if (topIntent) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            }
-        }
-        return intent.getFlags();
-    }
-
     final int startActivityLocked(IApplicationThread caller,
             Intent intent, String resolvedType, ActivityInfo aInfo, IBinder resultTo,
             String resultWho, int requestCode,
@@ -2580,7 +2549,40 @@ final class ActivityStack {
             }
         }
 
-        int launchFlags = updateFlags(intent);
+        boolean topIntent = true;
+
+        // If the current intent is not a new task we will check its top parent.
+        // Perhaps it started out as a multiwindow in which case we pass the flag on
+        final boolean newTask = (intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) == Intent.FLAG_ACTIVITY_NEW_TASK;
+        if (!newTask) {
+            ActivityRecord r = mHistory.size() > 0 ? mHistory.get(mHistory.size() -1) : null;
+            if (r != null && (r.intent.getFlags() & Intent.FLAG_MULTI_WINDOW) == Intent.FLAG_MULTI_WINDOW) {
+                intent.addFlags(Intent.FLAG_MULTI_WINDOW);
+                // Flag the activity as a sub-task
+                topIntent = false;
+            }
+        }
+
+        // If this is a multiwindow activity we prevent it from messing up the history stack,
+        // like jumping back home, killing the current activity or polluting recents
+        final boolean multiWindow = (intent.getFlags() & Intent.FLAG_MULTI_WINDOW) == Intent.FLAG_MULTI_WINDOW;
+        if (multiWindow) {
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_USER_ACTION);            
+
+            // If this is the mother-intent we make it volatile
+            if (topIntent) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            }
+        }
+
+        int launchFlags = intent.getFlags();
 
         if ((launchFlags&Intent.FLAG_ACTIVITY_FORWARD_RESULT) != 0
                 && sourceRecord != null) {
