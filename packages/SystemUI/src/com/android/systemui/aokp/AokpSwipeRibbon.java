@@ -349,10 +349,6 @@ public class AokpSwipeRibbon extends LinearLayout {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RIBBON_ICON_SIZE[mRibbonNumber]), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.SWIPE_RIBBON_COLOR), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.SWIPE_RIBBON_OPACITY), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RIBBON_DRAG_HANDLE_LOCATION), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RIBBON_TEXT_COLOR[mRibbonNumber]), false, this);
