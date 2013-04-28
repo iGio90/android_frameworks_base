@@ -1094,21 +1094,24 @@ public final class Settings {
          * @return true if the value was set, false on database errors
          */
         public static boolean putArrayList(ContentResolver cr, String name, ArrayList<String> list) {
-            if (list.size() > 0) {
+            if (list != null && list.size() > 0) {
                 String joined = TextUtils.join("|",list);
                 return putString(cr, name, joined);
+            } else {
+                return putString(cr, name, "");
             }
-            return false;
         }
 
         public static ArrayList<String> getArrayList(ContentResolver cr, String name) {
             String v = getString(cr, name);
             ArrayList<String> list = new ArrayList<String>();
             if (v != null) {
+              if (!v.isEmpty()){
                 String[] split = v.split("\\|");
                 for (String i : split) {
                     list.add(i);
-                }
+	        }
+              }
             }
             return list;
         }
