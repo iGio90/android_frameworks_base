@@ -5317,7 +5317,13 @@ public class Activity extends ContextThemeWrapper
         onUserInteraction();
         onUserLeaveHint();
     }
-    
+
+    void pa_stacktrace() {
+        RuntimeException here = new RuntimeException("here");
+        here.fillInStackTrace();
+        Slog.i("PARANOID.performStop", "Current stack", here);
+    }
+
     final void performStop() {
         if (mLoadersStarted) {
             mLoadersStarted = false;
@@ -5363,6 +5369,15 @@ public class Activity extends ContextThemeWrapper
             mStopped = true;
         }
         mResumed = false;
+
+        if (mWindow != null && mWindow.mIsMultiWindow && !isFinishing()) {
+            android.util.Log.d("PARANOID.performStop()->finish()", "Pkg="
+                    + mActivityInfo.packageName
+                    + " top=" + mActivityInfo.topIntent
+                    + " multi=" + mActivityInfo.multiWindow
+                    + " new=" + mActivityInfo.newTask);
+            finish();
+        }
     }
 
     final void performDestroy() {
