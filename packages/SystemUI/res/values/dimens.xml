@@ -276,4 +276,7 @@
     <dimen name="navring_radius_tablet_landscape">300dp</dimen>
     <!--  Radius of NavRing in Tablet Mode Landscape -->
     <dimen name="navring_radius_tablet_portrait">300dp</dimen>
+
+    <dimen name="halo_icon_size">70dp</dimen>
+
 </resources>
