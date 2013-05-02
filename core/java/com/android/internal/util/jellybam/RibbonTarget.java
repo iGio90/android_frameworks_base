@@ -56,7 +56,6 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.internal.util.jellybam.NavBarHelpers;
 import com.android.internal.R;
 
 import java.io.File;
