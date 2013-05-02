@@ -29,6 +29,9 @@ public class QSConstants {
         public static final String TILE_VOLUME = "toggleVolume";
         public static final String TILE_HYBRID = "toggleHybrid";
         public static final String TILE_REBOOT = "toggleReboot";
+        public static final String TILE_HOLOBAM = "toggleHolobam";
+        public static final String TILE_BAMCONTROL = "toggleBamcontrol";
+        public static final String TILE_MUSIC = "toggleMusic";
 
         public static final String TILE_DELIMITER = "|";
         public static ArrayList<String> TILES_DEFAULT = new ArrayList<String>();
@@ -36,11 +39,13 @@ public class QSConstants {
         static {
             TILES_DEFAULT.add(TILE_USER);
             TILES_DEFAULT.add(TILE_BRIGHTNESS);
-            TILES_DEFAULT.add(TILE_SETTINGS);
             TILES_DEFAULT.add(TILE_WIFI);
+            TILES_DEFAULT.add(TILE_SETTINGS);
+	    TILES_DEFAULT.add(TILE_BAMCONTROL);
             TILES_DEFAULT.add(TILE_MOBILEDATA);
             TILES_DEFAULT.add(TILE_BATTERY);
             TILES_DEFAULT.add(TILE_AIRPLANE);
+            TILES_DEFAULT.add(TILE_HOLOBAM);
             TILES_DEFAULT.add(TILE_HYBRID);
             TILES_DEFAULT.add(TILE_DESKTOPMODE);
         }

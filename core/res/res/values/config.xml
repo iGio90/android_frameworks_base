@@ -359,15 +359,15 @@
              1  UI_MODE_TYPE_NORMAL
              4  UI_MODE_TYPE_TELEVISION
              5  UI_MODE_TYPE_APPLIANCE
-             6  UI_MODE_TYPE_INVERTED
+             69 UI_MODE_TYPE_INVERTED
          Any other values will have surprising consequences. -->
     <integer name="config_defaultUiModeType">1</integer>
 
     <!-- Control the alternative UI mode type to use when UI mode is toggled
          from framework.  One of the following values (See Configuration.java):
              1  UI_MODE_TYPE_NORMAL
-             6  UI_MODE_TYPE_INVERTED -->
-    <integer name="config_alternativeUiModeType">6</integer>
+             69 UI_MODE_TYPE_INVERTED -->
+    <integer name="config_alternativeUiModeType">69</integer>
 
     <!-- Control whether being in the desk dock (and powered) always
          keeps the screen on.  By default it stays on when plugged in to
@@ -417,12 +417,6 @@
             2 - Power off (with confirmation)
     -->
     <integer name="config_longPressOnPowerBehavior">1</integer>
-
-    <!-- Package name for default keyguard appwidget [DO NOT TRANSLATE] -->
-    <string name="widget_default_package_name"></string>
-
-    <!-- Class name for default keyguard appwidget [DO NOT TRANSLATE] -->
-    <string name="widget_default_class_name"></string>
 
     <!-- Indicate whether the SD card is accessible without removing the battery. -->
     <bool name="config_batterySdCardAccessibility">false</bool>
@@ -1127,7 +1121,22 @@
     <!-- Timeout in MS for how long you have to long-press the back key to
          kill the foreground app. -->
     <integer name="config_backKillTimeout">750</integer>
-
     <!-- True if the Sym key should open the InputMethodPicker (default) -->
     <bool name="config_symKeyShowsImePicker">true</bool>
+
+    <!-- Package name for default keyguard appwidget [DO NOT TRANSLATE] -->
+    <string name="widget_default_package_name">com.cyanogenmod.lockclock</string>
+
+    <!-- Class name for default keyguard appwidget [DO NOT TRANSLATE] -->
+    <string name="widget_default_class_name">com.cyanogenmod.lockclock.ClockWidgetProvider</string>
+
+    <!-- The list absolute paths of jar/apk files containing the device specific handlers,
+         delimited by File.pathSeparator, which defaults to ":" on Android -->
+    <string name="config_deviceHandlersLib" translatable="false"></string>
+
+    <!-- Name of that dock battery handler class -->
+    <string name="config_deviceDockBatteryHandlerClass" translatable="false"></string>
+
+    <!-- Boolean to enable Stylus gestures -->
+    <bool name="config_stylusGestures">false</bool>
 </resources>

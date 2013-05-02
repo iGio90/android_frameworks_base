@@ -58,6 +58,8 @@ import static com.android.internal.util.jellybam.AwesomeConstants.*;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.R;
 
+import com.android.systemui.statusbar.WidgetView;
+
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +114,11 @@ public class AwesomeAction {
             case ACTION_KILL:
                 KillTask mKillTask = new KillTask(mContext);
                 mHandler.post(mKillTask);
+                break;
+            case ACTION_WIDGETS:
+                Intent toggleWidgets = new Intent(
+                    WidgetView.WidgetReceiver.ACTION_TOGGLE_WIDGETS);
+                mContext.sendBroadcast(toggleWidgets);
                 break;
             case ACTION_VIB:
                 if(am != null){

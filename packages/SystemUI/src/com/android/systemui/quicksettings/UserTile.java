@@ -54,10 +54,8 @@ public class UserTile extends QuickSettingsTile {
                         Log.e(TAG, "Couldn't show user switcher", e);
                     }
                 } else {
-                    Intent intent = ContactsContract.QuickContact.composeQuickContactsIntent(
-                            mContext, v, ContactsContract.Profile.CONTENT_URI,
-                            ContactsContract.QuickContact.MODE_LARGE, null);
-                    mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, ContactsContract.Profile.CONTENT_URI);
+                    startSettingsActivity(intent);
                 }
             }
         };
@@ -86,6 +84,10 @@ public class UserTile extends QuickSettingsTile {
         ImageView iv = (ImageView) mTile.findViewById(R.id.user_imageview);
         TextView tv = (TextView) mTile.findViewById(R.id.user_textview);
         tv.setText(mLabel);
+        tv.setTextSize(1, mTileTextSize);
+        if (mTileTextColor != -2) {
+            tv.setTextColor(mTileTextColor);
+        }
         iv.setImageDrawable(userAvatar);
     }
 

@@ -264,7 +264,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     static final int MAX_RUNNING_USERS = 3;
 
     static final int MY_PID = Process.myPid();
-    
+
     static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     public ActivityStack mMainStack;
@@ -285,10 +285,10 @@ public final class ActivityManagerService extends ActivityManagerNative
         ActivityRecord sourceRecord;
         int startFlags;
     }
-    
+
     final ArrayList<PendingActivityLaunch> mPendingActivityLaunches
             = new ArrayList<PendingActivityLaunch>();
-    
+
 
     BroadcastQueue mFgBroadcastQueue;
     BroadcastQueue mBgBroadcastQueue;
@@ -353,7 +353,7 @@ public final class ActivityManagerService extends ActivityManagerNative
      * The currently running heavy-weight process, if any.
      */
     ProcessRecord mHeavyWeightProcess = null;
-    
+
     /**
      * The last time that various processes have crashed.
      */
@@ -389,7 +389,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
     final SparseArray<ForegroundToken> mForegroundProcesses
             = new SparseArray<ForegroundToken>();
-    
+
     /**
      * List of records for processes that someone had tried to start before the
      * system was ready.  We don't start them at that point, but ensure they
@@ -431,7 +431,7 @@ public final class ActivityManagerService extends ActivityManagerNative
      * the "home" activity.
      */
     ProcessRecord mHomeProcess;
-    
+
     /**
      * This is the process holding the activity the user last visited that
      * is in a different process from the one they are currently in.
@@ -914,6 +914,12 @@ public final class ActivityManagerService extends ActivityManagerNative
         //    if (localLOGV) Slog.v(TAG, "Handler started!");
         //}
 
+        private boolean isRevokeEnabled() {
+            return android.provider.Settings.Secure.getInt(mContext.getContentResolver(),
+                    android.provider.Settings.Secure.ENABLE_PERMISSIONS_MANAGEMENT,
+                    0) == 1;
+        }
+
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case SHOW_ERROR_MSG: {
@@ -940,8 +946,23 @@ public final class ActivityManagerService extends ActivityManagerNative
                         return;
                     }
                     if (mShowDialogs && !mSleeping && !mShuttingDown) {
+                        boolean hasRevoked = false;
+                        if (isRevokeEnabled()) {
+                            for (String s: proc.pkgList) {
+                                try {
+                                    String[] perms = AppGlobals.getPackageManager().getRevokedPermissions(s);
+                                    if (perms != null && perms.length > 0) {
+                                        hasRevoked = true;
+                                        break;
+                                    }
+                                }
+                                catch (RemoteException e) {
+                                    // just ignore this.
+                                }
+                            }
+                        }
                         Dialog d = new AppErrorDialog(getUiContext(),
-                                ActivityManagerService.this, res, proc);
+                                ActivityManagerService.this, res, proc, hasRevoked);
                         d.show();
                         proc.crashDialog = d;
                     } else {
@@ -8679,6 +8700,15 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
             if (res == AppErrorDialog.FORCE_QUIT_AND_REPORT) {
                 appErrorIntent = createAppErrorIntentLocked(r, timeMillis, crashInfo);
+            } else if (res == AppErrorDialog.FORCE_QUIT_AND_RESET_PERMS) {
+                for (String pkg: r.pkgList) {
+                    long oldId = Binder.clearCallingIdentity();
+                    try {
+                        AppGlobals.getPackageManager().setRevokedPermissions(pkg, new String[0]);
+                    } catch (RemoteException e) {
+                    }
+                    Binder.restoreCallingIdentity(oldId);
+                }
             }
         }
 

@@ -12,6 +12,8 @@ import android.view.View.OnLongClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import static com.android.internal.util.cm.QSUtils.deviceSupportsMobileData;
+
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsController;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
@@ -100,7 +102,7 @@ public class MobileNetworkTile extends QuickSettingsTile implements NetworkSigna
             int mobileSignalIconId, String mobileSignalContentDescriptionId,
             int dataTypeIconId, String dataTypeContentDescriptionId,
             String description) {
-        if (deviceSupportsTelephony()) {
+        if (deviceSupportsMobileData(mContext)) {
             // TODO: If view is in awaiting state, disable
             Resources r = mContext.getResources();
             mDrawable = enabled && (mobileSignalIconId > 0)
@@ -130,11 +132,6 @@ public class MobileNetworkTile extends QuickSettingsTile implements NetworkSigna
     public void onAirplaneModeChanged(boolean enabled) {
     }
 
-    boolean deviceSupportsTelephony() {
-        PackageManager pm = mContext.getPackageManager();
-        return pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
-    }
-
     @Override
     void updateQuickSettings() {
         TextView tv = (TextView) mTile.findViewById(R.id.rssi_textview);
@@ -143,6 +140,10 @@ public class MobileNetworkTile extends QuickSettingsTile implements NetworkSigna
         iv.setImageResource(mDrawable);
         updateOverlayImage(mDataTypeIconId);
         tv.setText(mLabel);
+        tv.setTextSize(1, mTileTextSize);
+        if (mTileTextColor != -2) {
+            tv.setTextColor(mTileTextColor);
+        }
         mTile.setContentDescription(mContext.getResources().getString(
                 R.string.accessibility_quick_settings_mobile,
                 signalContentDescription, dataContentDescription,

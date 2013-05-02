@@ -85,6 +85,7 @@ import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarIconList;
 import com.android.internal.statusbar.StatusBarNotification;
 import com.android.internal.widget.SizeAdaptiveLayout;
+import com.android.systemui.aokp.AokpSwipeRibbon;
 import com.android.systemui.R;
 import com.android.systemui.SearchPanelView;
 import com.android.systemui.SystemUI;
@@ -123,6 +124,8 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected static final int MSG_HIDE_INTRUDER = 1027;
 
     private WidgetView mWidgetView;
+
+    private AokpSwipeRibbon mAokpSwipeRibbon;
 
     protected static final boolean ENABLE_INTRUDERS = false;
 
@@ -182,6 +185,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     public ColorUtils.ColorSettingInfo mLastIconColor;
     public ColorUtils.ColorSettingInfo mLastBackgroundColor;
     protected int mClockColor = com.android.internal.R.color.holo_blue_light;
+    public int mSystemUiLayout = ExtendedPropertiesUtils.getActualProperty("com.android.systemui.layout");
 
     // UI-specific methods
 
@@ -380,6 +384,9 @@ public abstract class BaseStatusBar extends SystemUI implements
         createAndAddWindows();
         // create WidgetView
         mWidgetView = new WidgetView(mContext,null);
+        mAokpSwipeRibbon = new AokpSwipeRibbon(mContext,null,"bottom");
+        mAokpSwipeRibbon = new AokpSwipeRibbon(mContext,null,"left");
+        mAokpSwipeRibbon = new AokpSwipeRibbon(mContext,null,"right");
         disable(switches[0]);
         setSystemUiVisibility(switches[1], 0xffffffff);
         topAppWindowChanged(switches[2] != 0);
@@ -891,8 +898,17 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         // Provide SearchPanel with a temporary parent to allow layout params to work.
         LinearLayout tmpRoot = new LinearLayout(mContext);
-        mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
-                 R.layout.status_bar_search_panel, tmpRoot, false);
+
+        if (mSystemUiLayout >= 1000) {  // Device is Tablet 
+            mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+                    R.layout.status_bar_search_panel_tablet, tmpRoot, false);
+        } else if (mSystemUiLayout >= 600) {  // Device uses Phablet UI
+            mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+                    R.layout.status_bar_search_panel_phablet, tmpRoot, false);
+        } else {  // Device is Phone 
+            mSearchPanelView = (SearchPanelView) LayoutInflater.from(mContext).inflate(
+                    R.layout.status_bar_search_panel, tmpRoot, false);
+        }
         mSearchPanelView.setOnTouchListener(
                  new TouchOutsideListener(MSG_CLOSE_SEARCH_PANEL, mSearchPanelView));
         mSearchPanelView.setVisibility(View.GONE);
@@ -1302,10 +1318,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                     // the stack trace isn't very helpful here.  Just log the exception message.
                     Slog.w(TAG, "Sending contentIntent failed: " + e);
                 }
-
-                KeyguardManager kgm =
-                    (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
-                if (kgm != null) kgm.exitKeyguardSecurely(null);
             }
 
             try {
