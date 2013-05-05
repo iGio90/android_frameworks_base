@@ -278,5 +278,6 @@
     <dimen name="navring_radius_tablet_portrait">300dp</dimen>
 
     <dimen name="halo_icon_size">65dp</dimen>
+    <dimen name="halo_icon_margin">5dp</dimen>
 
 </resources>
