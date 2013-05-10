@@ -530,8 +530,8 @@ public class SearchPanelView extends FrameLayout implements
 
     @Override
     protected void onDetachedFromWindow() {
+        mContentResolver.unregisterContentObserver(mObserver);
         super.onDetachedFromWindow();
-        mObserver.unobserve();
     }
 
     /**

@@ -99,6 +99,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private boolean mLongPress = false;
     private boolean mUnlockBroadcasted = false;
     private boolean mUsesCustomTargets;
+    private int mUnlockPos;
     private String[] targetActivities = new String[8];
     private String[] longActivities = new String[8];
     private String[] customIcons = new String[8];

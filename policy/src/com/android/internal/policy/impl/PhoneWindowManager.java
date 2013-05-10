@@ -586,9 +586,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private KeyguardManager mKeyguardManager;
 
-    // HW overlays state
-    int mDisableOverlays = 0;
-
     private int mSystemDpi = 0;
     private int mSystemUiDpi = 0;
     private int mSystemUiLayout = 0;
