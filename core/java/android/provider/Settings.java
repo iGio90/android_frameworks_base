@@ -2683,6 +2683,7 @@ public final class Settings {
 
         /**
         * Notification Power Widget - Custom Ring Mode
+        * Override and forcefully disable the fullscreen keyboard
         * @hide
         */
         public static final String EXPANDED_RING_MODE = "expanded_ring_mode";
