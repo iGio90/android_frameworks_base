@@ -15,10 +15,6 @@
  */
 package com.android.internal.policy.impl.keyguard;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-
 import android.animation.ObjectAnimator;
 import android.app.ActivityManagerNative;
 import android.app.SearchManager;
@@ -47,9 +43,6 @@ import android.graphics.RectF;
 import android.graphics.Xfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -78,7 +71,8 @@ import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.GlowPadView.OnTriggerListener;
 import com.android.internal.widget.multiwaveview.TargetDrawable;
 import com.android.internal.R;
-import com.android.internal.widget.multiwaveview.TargetDrawable;
+
+import java.util.ArrayList;
 
 import java.util.ArrayList;
 
@@ -87,7 +81,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private static final String TAG = "SecuritySelectorView";
 
     private KeyguardSecurityCallback mCallback;
-    private KeyguardTargets mTargets;
     private GlowPadView mGlowPadView;
     private LinearLayout mRibbon;
     private LinearLayout ribbonView;
@@ -97,9 +90,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private LockPatternUtils mLockPatternUtils;
     private SecurityMessageDisplay mSecurityMessageDisplay;
     private Drawable mBouncerFrame;
-    private String[] mStoredTargets;
-    private int mTargetOffset;
-    private boolean mIsScreenLarge;
     private int mCreationOrientation;
     private Resources res;
 
@@ -174,7 +164,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
 
         public void onTrigger(View v, int target) {
             mContext.unregisterReceiver(receiver);
-            if (!mUsesCustomTargets) {
+            if ((!mUsesCustomTargets) || (mTargetCounter() == 0 && mUnlockCounter() < 2)) {
                 mCallback.userActivity(0);
                 mCallback.dismiss(false);
             } else {
@@ -305,35 +295,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         mFadeView = carrierArea;
     }
 
-    public boolean isScreenLarge() {
-        final int screenSize = Resources.getSystem().getConfiguration().screenLayout &
-                Configuration.SCREENLAYOUT_SIZE_MASK;
-        boolean isScreenLarge = screenSize == Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE;
-        return isScreenLarge;
-    }
-
-    private StateListDrawable getLayeredDrawable(Drawable back, Drawable front, int inset, boolean frontBlank) {
-        Resources res = getResources();
-        InsetDrawable[] inactivelayer = new InsetDrawable[2];
-        InsetDrawable[] activelayer = new InsetDrawable[2];
-        inactivelayer[0] = new InsetDrawable(res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_lock_pressed), 0, 0, 0, 0);
-        inactivelayer[1] = new InsetDrawable(front, inset, inset, inset, inset);
-        activelayer[0] = new InsetDrawable(back, 0, 0, 0, 0);
-        activelayer[1] = new InsetDrawable(frontBlank ? res.getDrawable(android.R.color.transparent) : front, inset, inset, inset, inset);
-        StateListDrawable states = new StateListDrawable();
-        LayerDrawable inactiveLayerDrawable = new LayerDrawable(inactivelayer);
-        inactiveLayerDrawable.setId(0, 0);
-        inactiveLayerDrawable.setId(1, 1);
-        LayerDrawable activeLayerDrawable = new LayerDrawable(activelayer);
-        activeLayerDrawable.setId(0, 0);
-        activeLayerDrawable.setId(1, 1);
-        states.addState(TargetDrawable.STATE_INACTIVE, inactiveLayerDrawable);
-        states.addState(TargetDrawable.STATE_ACTIVE, activeLayerDrawable);
-        states.addState(TargetDrawable.STATE_FOCUSED, activeLayerDrawable);
-        return states;
-    }
-
     public boolean isTargetPresent(int resId) {
         return mGlowPadView.getTargetPosition(resId) != -1;
     }
@@ -380,7 +341,38 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         // no targets? add just an unlock.
         if (!mUsesCustomTargets) {
             storedDraw.add(LockScreenHelpers.getTargetDrawable(mContext, AwesomeConstant.ACTION_UNLOCK.value()));
+        } else if (mTargetCounter() == 0 && mUnlockCounter() < 2) {
+            float offset = 0.0f;
+            switch (mUnlockPos) {
+            case 0:
+                offset = 0.0f;
+                break;
+            case 1:
+                offset = -45.0f;
+                break;
+            case 2:
+                offset = -90.0f;
+                break;
+            case 3:
+                offset = -135.0f;
+                break;
+            case 4:
+                offset = 180.0f;
+                break;
+            case 5:
+                offset = 135.0f;
+                break;
+            case 6:
+                offset = 90.0f;
+                break;
+            case 7:
+                offset = 45.0f;
+                break;
+            }
+            mGlowPadView.setOffset(offset);
+            storedDraw.add(LockScreenHelpers.getTargetDrawable(mContext, AwesomeConstant.ACTION_UNLOCK.value()));
         } else {
+            mGlowPadView.setMagneticTargets(false);
             // Add The Target actions and Icons
             for (int i = 0; i < 8 ; i++) {
                 if (!TextUtils.isEmpty(customIcons[i])) {
@@ -399,6 +391,22 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         for (int i = 0; i < 8 ; i++) {
             if (!TextUtils.isEmpty(targetActivities[i])) {
                 if (targetActivities[i].equals(AwesomeConstant.ACTION_UNLOCK.value())) {
+                    mUnlockPos = i;
+                    counter += 1;
+                }
+            }
+        }
+        return counter;
+    }
+
+    private int mTargetCounter() {
+        int counter = 0;
+        for (int i = 0; i < 8 ; i++) {
+            if (!TextUtils.isEmpty(targetActivities[i])) {
+                if (targetActivities[i].equals(AwesomeConstant.ACTION_UNLOCK.value()) ||
+                    targetActivities[i].equals(AwesomeConstant.ACTION_NULL.value())) {
+                // I just couldn't take the negative logic....
+                } else {
                     counter += 1;
                 }
             }
@@ -452,10 +460,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
 
     public void setKeyguardCallback(KeyguardSecurityCallback callback) {
         mCallback = callback;
-        mTargets = (KeyguardTargets) findViewById(R.id.targets);
-        if(mTargets != null) {
-            mTargets.setKeyguardCallback(callback);
-        }
     }
 
     public void setLockPatternUtils(LockPatternUtils utils) {
