@@ -242,6 +242,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int KEY_ACTION_KILL_APP = 11;
     private static final int KEY_ACTION_LAST_APP = 12;
     private static final int KEY_ACTION_CUSTOM_APP = 13;
+    private static final int KEY_ACTION_TORCH = 14;
 
     // Masks for checking presence of hardware keys.
     // Must match values in core/res/res/values/config.xml
@@ -1096,6 +1097,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
                     pm.goToSleep(SystemClock.uptimeMillis());
                     break;
+	        case KEY_ACTION_TORCH:
+                    Intent i = new Intent("net.cactii.flash2.TOGGLE_FLASHLIGHT");
+                    i.putExtra("bright", false);
+                    mContext.sendBroadcast(i);
                case KEY_ACTION_NOTIFICATIONS:
                     try {
                         IStatusBarService statusbar = getStatusBarService();
@@ -2544,6 +2549,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                                         & Settings.Secure.RING_HOME_BUTTON_BEHAVIOR_ANSWER) != 0) {
                                     Log.i(TAG, "Answering with HOME button.");
                                     telephonyService.answerRingingCall();
+                                    Intent launchPhone = new Intent(Intent.ACTION_DIAL, null);
+                                    mContext.startActivity(launchPhone);
                                 } else {
                                     Log.i(TAG, "Ignoring HOME; there's a ringing incoming call.");
                                 }

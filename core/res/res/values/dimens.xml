@@ -355,4 +355,7 @@
     <dimen name="notification_ribbon_padding">16dp</dimen>
     <dimen name="lockscreen_ribbon_padding">16dp</dimen>
 
+    <!-- Default maximum height for the widget pager in the keyguard -->
+    <dimen name="keyguard_widget_pager_max_height">480dp</dimen>
+
 </resources>
