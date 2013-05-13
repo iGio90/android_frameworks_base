@@ -714,6 +714,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 @Override
                 public void onSizeChanged(View view, int w, int h, int oldw, int oldh) {
                     updateCarrierLabelVisibility(false);
+                    updateRibbonTargets();
                 }
             });
         }
@@ -1208,6 +1209,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             updateNotificationShortcutsVisibility(false, true);
             if (mNotificationShortcutsToggle) {
                 mNotificationPanel.postDelayed(new Runnable() {
+                    @Override
                     public void run() {
                         updateNotificationShortcutsVisibility(true);
                     }
