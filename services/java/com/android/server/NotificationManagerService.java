@@ -1650,9 +1650,8 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
         }
 
-        // Don't flash while we are in a call or screen is on
-        if (mLedNotification == null || mInCall || (mScreenOn && !ledScreenOn)
-                || (inQuietHours() && mQuietHoursDim)) {
+        // Don't flash while we are in a call, screen is on or we are in quiet hours with light dimmed
+        if (mLedNotification == null || mInCall || mScreenOn || (inQuietHours() && mQuietHoursDim)) {
             mNotificationLight.turnOff();
         } else {
             int ledARGB;
