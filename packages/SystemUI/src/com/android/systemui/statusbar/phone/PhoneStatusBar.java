@@ -195,9 +195,8 @@ public class PhoneStatusBar extends BaseStatusBar {
     int mIconHPadding = -1;
     Display mDisplay;
     Point mCurrentDisplaySize = new Point();
-    int mCurrentUIMode = 0; 
-
     private boolean mHasDockBattery;
+    int mCurrUiInvertedMode;
 
     IDreamManager mDreamManager;
 
@@ -235,7 +234,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     // settings
     QuickSettingsController mQS;
-    boolean mUiModeIsToggled;
     boolean mHasSettingsPanel, mHideSettingsPanel, mHasFlipSettings;
     SettingsPanelView mSettingsPanel;
     View mFlipSettingsView;
@@ -414,6 +412,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         mDreamManager = IDreamManager.Stub.asInterface(
                 ServiceManager.checkService(DreamService.DREAM_SERVICE));
 
+        mCurrUiInvertedMode = mContext.getResources().getConfiguration().uiInvertedMode;
+
         CustomTheme currentTheme = mContext.getResources().getConfiguration().customTheme;
         if (currentTheme != null) {
             mCurrentTheme = (CustomTheme)currentTheme.clone();
@@ -566,9 +566,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mClearButton.setVisibility(View.INVISIBLE);
         mClearButton.setEnabled(false);
         mDateView = (DateView)mStatusBarWindow.findViewById(R.id.date);
-
-        mUiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
-                              Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
 
         if (mStatusBarView.hasFullWidthNotifications()) {
             mHideSettingsPanel = Settings.System.getInt(mContext.getContentResolver(),
@@ -2990,11 +2987,20 @@ public class PhoneStatusBar extends BaseStatusBar {
         final Context context = mContext;
         final Resources res = context.getResources();
 
+        // detect inverted ui mode change
+        int uiInvertedMode =
+            mContext.getResources().getConfiguration().uiInvertedMode;
+
         // detect theme change.
         CustomTheme newTheme = res.getConfiguration().customTheme;
-        if (newTheme != null &&
-                (mCurrentTheme == null || !mCurrentTheme.equals(newTheme))) {
-            mCurrentTheme = (CustomTheme)newTheme.clone();
+        if ((newTheme != null &&
+                (mCurrentTheme == null || !mCurrentTheme.equals(newTheme)))
+            || uiInvertedMode != mCurrUiInvertedMode) {
+            if (uiInvertedMode != mCurrUiInvertedMode) {
+                mCurrUiInvertedMode = uiInvertedMode;
+            } else {
+                mCurrentTheme = (CustomTheme) newTheme.clone();
+            }
             recreateStatusBar();
         } else {
 
@@ -3175,11 +3181,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         public void onChange(boolean selfChange) {
             boolean hideSettingsPanel = Settings.System.getInt(mContext.getContentResolver(),
                                     Settings.System.QS_DISABLE_PANEL, 0) == 1;
-            boolean uiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
-                                    Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
 
-            if (hideSettingsPanel != mHideSettingsPanel
-                || uiModeIsToggled != mUiModeIsToggled) {
+            if (hideSettingsPanel != mHideSettingsPanel) {
                 recreateStatusBar();
             }
 
@@ -3257,10 +3260,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         public void startObserving() {
             final ContentResolver cr = mContext.getContentResolver();
-
-            cr.registerContentObserver(
-                    Settings.Secure.getUriFor(Settings.Secure.UI_MODE_IS_TOGGLED),
-                    false, this);
 
             cr.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NOTIF_WALLPAPER_ALPHA),
