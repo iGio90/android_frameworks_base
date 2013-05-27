@@ -80,6 +80,11 @@ public class SignalClusterView
     public SignalClusterView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mColorInfo = ColorUtils.getColorSettingInfo(context, Settings.System.STATUS_ICON_COLOR);
+
+        mHandler = new Handler();
+        if (mSettingsObserver == null) {
+            mSettingsObserver = new SettingsObserver(mHandler);
+        }
     }
 
     public void setNetworkController(NetworkController nc) {

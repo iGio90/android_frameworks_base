@@ -741,6 +741,11 @@ public class PhoneStatusBar extends BaseStatusBar {
                 }
             }
 
+            if (mQS != null) {
+                mQS.shutdown();
+                mQS = null;
+            }
+
             // wherever you find it, Quick Settings needs a container to survive
             mSettingsContainer = (QuickSettingsContainerView)
                     mStatusBarWindow.findViewById(R.id.quick_settings_container);
@@ -762,9 +767,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 // Start observing for changes
                 mTilesChangedObserver = new TilesChangedObserver(mHandler);
                 mTilesChangedObserver.startObserving();
-
-            } else {
-                mQS = null; // fly away, be free
             }
         }
 
@@ -773,8 +775,10 @@ public class PhoneStatusBar extends BaseStatusBar {
         mNotifChangedObserver.startObserving();
 
         // Start observing for changes on QuickSettings (needed here for enable/hide qs)
-        mTilesChangedObserver = new TilesChangedObserver(mHandler);
-        mTilesChangedObserver.startObserving();
+        if (mTilesChangedObserver == null) {
+            mTilesChangedObserver = new TilesChangedObserver(mHandler);
+            mTilesChangedObserver.startObserving();
+        }
 
         mClingShown = ! (DEBUG_CLINGS
             || !Prefs.read(mContext).getBoolean(Prefs.SHOWN_QUICK_SETTINGS_HELP, false));
