@@ -3344,6 +3344,9 @@ public final class Settings {
           * 11 - Kill App
           * 12 - Last App
           * 13 - Custom App
+          * 14 - Widget viewpager
+          * 15 - QuickSettings shade toggle
+          * 16 - Camera button
           * @hide
           */
 
@@ -3823,6 +3826,24 @@ public final class Settings {
         public static final String NAVIGATION_BAR_SHOW = "navigation_bar_show";
 
         /**
+         * Action for long-pressing assist button on lock screen
+         * @hide
+         */
+        public static final String LOCKSCREEN_LONG_ASSIST_ACTION = "lockscreen_long_assist_action";
+
+        /**
+         * Action for long-pressing app switch button on lock screen
+         * @hide
+         */
+        public static final String LOCKSCREEN_LONG_APP_SWITCH_ACTION = "lockscreen_long_app_switch_action";
+
+        /**
+         * Action for long-pressing camera button on lock screen
+         * @hide
+         */
+        public static final String LOCKSCREEN_LONG_CAMERA_ACTION = "lockscreen_long_camera_action";
+
+        /**
          * @hide
          */
         public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
@@ -3940,6 +3961,20 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_SIGNAL_TEXT = "statusbar_signal_text";
+
+         /**
+          * Action to perform when the camera key is pressed. (Default is 16)
+          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+          * @hide
+          */
+         public static final String KEY_CAMERA_ACTION = "key_camera_action";
+
+         /**
+          * Action to perform when the app camera is long-pressed. (Default is 0)
+          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+          * @hide
+          */
+         public static final String KEY_CAMERA_LONG_PRESS_ACTION = "key_camera_long_press_action";
 
         /**
          * statusbar signal text color
