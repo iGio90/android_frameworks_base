@@ -253,22 +253,20 @@ public class QuickSettingsController {
         }
     }
 
-    public void shutdown() {
-        if (mObserver != null) {
-            mContext.getContentResolver().unregisterContentObserver(mObserver);
-        }
+    public void setupQuickSettings() {
+        mQuickSettingsTiles.clear();
+        mContainerView.removeAllViews();
+        // Clear out old receiver
         if (mReceiver != null) {
             mContext.unregisterReceiver(mReceiver);
         }
-        mContainerView.removeAllViews();
-    }
-
-    public void setupQuickSettings() {
-        shutdown();
-        LayoutInflater inflater = LayoutInflater.from(mContext);
         mReceiver = new QSBroadcastReceiver();
         mReceiverMap.clear();
         ContentResolver resolver = mContext.getContentResolver();
+        // Clear out old observer
+        if (mObserver != null) {
+            resolver.unregisterContentObserver(mObserver);
+        }
         mObserver = new QuickSettingsObserver(mHandler);
         mObserverMap.clear();
         loadTiles();
