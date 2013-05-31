@@ -2737,7 +2737,7 @@ public final class Settings {
          * of the stock battery icon
          * 0: don't show the clock
          * 1: show the clock
-         * default: 1
+         * Pie gap angle, should default to 2
          * @hide
          */
         public static final String STATUS_BAR_CLOCK = "status_bar_clock";
