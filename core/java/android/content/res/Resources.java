@@ -1518,8 +1518,7 @@ public class Resources extends ExtendedPropertiesUtils {
                     keyboardHidden, mConfiguration.navigation, width, height,
                     mConfiguration.smallestScreenWidthDp,
                     mConfiguration.screenWidthDp, mConfiguration.screenHeightDp,
-                    mConfiguration.screenLayout,
-                    mConfiguration.uiInvertedMode, mConfiguration.uiMode,
+                    mConfiguration.screenLayout, mConfiguration.uiMode,
                     Build.VERSION.RESOURCES_SDK_INT);
 
             if (DEBUG_CONFIG) {

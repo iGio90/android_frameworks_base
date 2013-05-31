@@ -169,6 +169,7 @@ public class UiModeManager {
      * {@link Configuration#UI_MODE_TYPE_DESK Configuration.UI_MODE_TYPE_DESK}, or
      * {@link Configuration#UI_MODE_TYPE_CAR Configuration.UI_MODE_TYPE_CAR}, or
      * {@link Configuration#UI_MODE_TYPE_TELEVISION Configuration.UI_MODE_TYPE_APPLIANCE}, or
+     * {@link Configuration#UI_MODE_TYPE_INVERTED Configuration.UI_MODE_TYPE_INVERTED}.
      */
     public int getCurrentModeType() {
         if (mService != null) {
