@@ -51,10 +51,10 @@ public class BatteryBarController extends LinearLayout {
         public GlobalSettingsObserver(Handler handler, Context context) {
             super(handler);
             mContext = context.getApplicationContext();
-+        }
-+
-+        static GlobalSettingsObserver getInstance(Context context) {
-+            if (sInstance == null) {
+        }
+
+        static GlobalSettingsObserver getInstance(Context context) {
+            if (sInstance == null) {
                 sInstance = new GlobalSettingsObserver(new Handler(), context);
             }
             return sInstance;
