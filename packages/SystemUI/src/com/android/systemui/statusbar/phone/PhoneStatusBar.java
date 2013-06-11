@@ -2617,7 +2617,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mCenterClockLayout.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             // we do not animate the ticker away at this point, just get rid of it (b/6992707)
-=======
+
             if (!mHaloActive) {
                 mStatusBarContents.setVisibility(View.VISIBLE);
                 mTickerView.setVisibility(View.GONE);
@@ -2625,16 +2625,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                 mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out,
                             mTickingDoneListener));
             }
-        }
-
-        public void tickerHalting() {
-            if (!mHaloActive) {
-                mStatusBarContents.setVisibility(View.VISIBLE);
-                mTickerView.setVisibility(View.GONE);
-                mStatusBarContents.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
-                // we do not animate the ticker away at this point, just get rid of it (b/6992707)
-            }
->>>>>>> 3df14ac... switcher preparation
         }
     }
 
