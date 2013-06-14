@@ -27,7 +27,6 @@ public class HolobamTile extends QuickSettingsTile {
             public void onClick(View v) {
 		Settings.Secure.putInt(mContext.getContentResolver(),
                         Settings.Secure.UI_INVERTED_MODE, !getHoloBamState() ? 2 : 1);
-	        Helpers.restartTrebuchet();
             }
         };
 
