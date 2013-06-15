@@ -3880,6 +3880,14 @@ public final class Settings {
         public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
 
         /**
+         *
+         * HALO being minimal.
+         * @hide
+         */
+        public static final String HALO_STYLE = "halo_style";
+
+        /**
+         *
          * @hide
          */
         public static final String NAVIGATION_BAR_HEIGHT_LANDSCAPE = "navigation_bar_height_landscape";
