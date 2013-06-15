@@ -19,6 +19,7 @@ public class PreferencesTile extends QuickSettingsTile{
             @Override
             public void onClick(View v) {
                 startSettingsActivity(android.provider.Settings.ACTION_SETTINGS);
+		mQsc.mBar.collapseAllPanels(true);
             }
         };
     }
