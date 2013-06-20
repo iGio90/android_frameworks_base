@@ -212,14 +212,6 @@ public class PanelView extends FrameLayout {
     protected float mInitialTouchY;
     protected float mFinalTouchY;
 
-    // brightness slider stuff
-    private Handler mHandler = new Handler();
-    private Float mPropFactor;
-    private Integer mBrightnessValue;
-    private int lastBrightnessChanged = -1;
-    private boolean mBrightnessSliderEnabled = true;
-    private boolean mShouldReactToBrightnessSlider = false;
-
     public void setRubberbandingEnabled(boolean enable) {
         mRubberbandingEnabled = enable;
     }
@@ -385,7 +377,6 @@ public class PanelView extends FrameLayout {
 
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            mShouldReactToBrightnessSlider = false;
                             mTracking = true;
                             mHandleView.setPressed(true);
                             postInvalidate(); // catch the press state change
@@ -399,9 +390,6 @@ public class PanelView extends FrameLayout {
                             if (mExpandedHeight == 0) {
                                 mJustPeeked = true;
                                 runPeekAnimation();
-                                if(mBrightnessSliderEnabled) {
-                                    mHandler.postDelayed(mSetShouldReact, 400);
-                                }
                             }
                             break;
 
@@ -412,16 +400,7 @@ public class PanelView extends FrameLayout {
                                     mPeekAnimator.cancel();
                                 }
                                 mJustPeeked = false;
-                                if(mBrightnessSliderEnabled) {
-                                    mHandler.removeCallbacks(mSetShouldReact);
-                                    mShouldReactToBrightnessSlider = false;
-                                }
                             }
-                            if(mBrightnessSliderEnabled && mTracking && mShouldReactToBrightnessSlider) {
-                                if(mPropFactor == null) setPropFactor();
-                                mBrightnessValue = checkMinMax(Math.round(event.getRawX() * mPropFactor));
-                                changeBrightness();
-                             }
                             if (!mJustPeeked) {
                                 PanelView.this.setExpandedHeightInternal(h);
                                 mBar.panelExpansionChanged(PanelView.this, mExpandedFraction);
@@ -433,7 +412,6 @@ public class PanelView extends FrameLayout {
                         case MotionEvent.ACTION_UP:
                         case MotionEvent.ACTION_CANCEL:
                             mFinalTouchY = y;
-                            mShouldReactToBrightnessSlider = false;
                             mTracking = false;
                             mHandleView.setPressed(false);
                             postInvalidate(); // catch the press state change
