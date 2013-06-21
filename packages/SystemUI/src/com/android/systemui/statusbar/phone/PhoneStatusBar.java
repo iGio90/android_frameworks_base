@@ -3295,6 +3295,14 @@ public class PhoneStatusBar extends BaseStatusBar {
             cr.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.QUICK_TILES_TEXT_COLOR),
                     false, this);
+
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QUICK_TILES_BG_COLOR),
+                    false, this);
+
+            cr.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.QUICK_TILES_BG_PRESSED_COLOR),
+                    false, this);
         }
     }
 
