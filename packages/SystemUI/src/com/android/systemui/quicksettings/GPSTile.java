@@ -47,6 +47,7 @@ public class GPSTile extends QuickSettingsTile implements LocationGpsStateChange
             @Override
             public boolean onLongClick(View v) {
                 startSettingsActivity(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                mQsc.mBar.collapseAllPanels(true);
                 return true;
             }
         };

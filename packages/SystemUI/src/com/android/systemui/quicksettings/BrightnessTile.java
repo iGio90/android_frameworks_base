@@ -55,6 +55,7 @@ public class BrightnessTile extends QuickSettingsTile implements BrightnessState
             @Override
             public boolean onLongClick(View v) {
                 startSettingsActivity(Settings.ACTION_DISPLAY_SETTINGS);
+                mQsc.mBar.collapseAllPanels(true);
                 return true;
             }
 

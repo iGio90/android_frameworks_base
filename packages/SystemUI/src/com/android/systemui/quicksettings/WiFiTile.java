@@ -35,6 +35,7 @@ public class WiFiTile extends QuickSettingsTile implements NetworkSignalChangedC
             @Override
             public boolean onLongClick(View v) {
                 startSettingsActivity(android.provider.Settings.ACTION_WIFI_SETTINGS);
+                mQsc.mBar.collapseAllPanels(true);
                 return true;
             }
         };

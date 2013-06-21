@@ -44,6 +44,7 @@ public class BluetoothTile extends QuickSettingsTile implements BluetoothStateCh
             @Override
             public boolean onLongClick(View v) {
                 startSettingsActivity(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+                mQsc.mBar.collapseAllPanels(true);
                 return true;
             }
         };
