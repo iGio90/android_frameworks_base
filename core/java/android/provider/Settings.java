@@ -3979,6 +3979,13 @@ public final class Settings {
         public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
 
         /**
+         *
+         * HALO circle bg color.
+         * @hide
+         */
+        public static final String HALO_CIRCLE_COLOR = "halo_circle_color";
+
+        /**
          * HALO speech bubble color
          * @hide
          */
