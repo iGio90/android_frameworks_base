@@ -109,7 +109,7 @@ public class HaloProperties extends FrameLayout {
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
-    }        
+    }
 
     public void setHaloX(int value) {
         mHaloX = value;

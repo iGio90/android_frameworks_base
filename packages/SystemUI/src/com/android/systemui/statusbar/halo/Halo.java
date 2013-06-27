@@ -149,6 +149,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
     private Paint mPaintWhite = new Paint();
     private Paint mPaintHoloRed = new Paint();
 
+    private boolean mAttached = false;
     private boolean isBeingDragged = false;
     private boolean mHapticFeedback;
     private boolean mHideTicker;
@@ -159,6 +160,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
     private boolean mIsNotificationNew = true;
     private boolean mOverX = false;
     private boolean mInteractionReversed = true;
+    private boolean hiddenState = false;
 
     private int mIconSize, mIconHalfSize;
     private int mScreenWidth, mScreenHeight;
@@ -168,7 +170,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
     private int oldIconIndex = -1;
     private float initialX = 0;
     private float initialY = 0;
-    private boolean hiddenState = false;
+
 
     private final class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -213,6 +215,28 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         }
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (!mAttached) {
+            mAttached = true;
+            mSettingsObserver = new SettingsObserver(new Handler());
+            mSettingsObserver.observe();
+            mSettingsObserver.onChange(true);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (mAttached) {
+            mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
+            mAttached = false;
+        }
+    }
+
     public Halo(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -230,10 +254,6 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback {
         mGestureDetector = new GestureDetector(mContext, new GestureListener());
         mHandler = new Handler();
         mRoot = this;
-
-        mSettingsObserver = new SettingsObserver(new Handler());
-        mSettingsObserver.observe();
-        mSettingsObserver.onChange(true);
 
         // Init variables
         BitmapDrawable bd = (BitmapDrawable) mContext.getResources().getDrawable(R.drawable.halo_bg);
